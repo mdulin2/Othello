@@ -15,25 +15,52 @@ class Turn:
     def getTurn(self):
         return self.turn
 
+class ScoreBoard:
+
+    # player and AI are either 'W' or 'B'. They cannot be the same
+    def __init__(self, player, AI):
+        assert(player != AI)
+        self.whiteScore = 0
+        self.blackScore = 0
+        self.player = player
+        self.AI = AI
+
+    def updateScore(self, w, b):
+        self.whiteScore = w
+        self.blackScore = b
+
+    def displayScore(self):
+        print "----ScoreBoard----"
+        if(self.player == 'W'):
+            print ("Player Score: " + str(self.whiteScore))
+            print ("AI Score: " + str(self.blackScore))
+            print "------------------"
+        else:
+            print ("Player Score: " + str(self.blackScore))
+            print ("AI Score: " + str(self.whiteScore))
+            print "------------------"
 
 class Board:
 
-    #Constructor for the Board. Turn defaults to Black
-    def __init__(self, turn='B'):
+    # Constructor for the Board. Turn defaults to Black.
+    # player and AI are either 'W' or 'B'.
+    # config is either 1 or 2. 1 if 'W' starts top left, 2 if flipped.
+    def __init__(self, player, AI, config, turn='B'):
+        # initialize scoreboard with correct player names
+        self.scoreboard = ScoreBoard(player, AI)
+        # import rules of Othello
         self.rules = Rules()
         #making the board matrix
         self.matrixB = np.chararray((9,9))
         #whose turn it is; 'B' for black and 'W' for white.
         self.turn = Turn(turn)
         # set up the game and initial Board
-        self.__gameSetUp()
+        self.__gameSetUp(config)
 
     #this print function will display the contents of the board, matrixB
     def printBoard(self):
-        scoreTup = self.getScore()
         print self.matrixB
-        print("White score: " + str(scoreTup[0]))
-        print("Black score: " + str(scoreTup[1]))
+        self.scoreboard.displayScore()
 
     #returns the value of turn, either B for black or W for white.
     def getTurn(self):
@@ -48,12 +75,13 @@ class Board:
             y = self.__changeY(y)
             self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
             self.turn.flip()
+            wScore,bScore = self.getScore()
+            self.scoreboard.updateScore(wScore,bScore)
 
         else:
             raise Exception("Move Error")
 
-    # displays the current score and also returns
-    # the score as (whiteScore,blackScore)
+    # returns the score as two integer returns: white score followed by black.
     def getScore(self):
         whiteScore = 0
         blackScore = 0
@@ -65,7 +93,7 @@ class Board:
                 elif(self.matrixB[i,j] == 'B'):
                     blackScore += 1
 
-        return (whiteScore,blackScore)
+        return whiteScore,blackScore
 
 
     ############################
@@ -73,9 +101,9 @@ class Board:
     ############################
 
     #Running the initial set ups for the game.
-    def __gameSetUp(self):
+    def __gameSetUp(self, config=1):
         self.__createBoard()
-        self.__startingBoard()
+        self.__startingBoard(config)
 
     #adds the values onto the Othello Board for references.
     def __createBoard(self):
@@ -87,11 +115,23 @@ class Board:
             self.matrixB[i,0] = i
 
     #Sets the starting pieces to the game without toggling the turn.
-    def __startingBoard(self):
-        self.matrixB[4,5] = 'B'
-        self.matrixB[4,4] = 'W'
-        self.matrixB[5,4] = 'B'
-        self.matrixB[5,5] = 'W'
+    # if config == 1, begins with 'B' in top left.
+    # if config == 2, begins with 'W' in top left
+    def __startingBoard(self, config):
+        if(config == 1):
+            self.matrixB[4,5] = 'B'
+            self.matrixB[4,4] = 'W'
+            self.matrixB[5,4] = 'B'
+            self.matrixB[5,5] = 'W'
+        elif(config == 2):
+            self.matrixB[4,5] = 'W'
+            self.matrixB[4,4] = 'B'
+            self.matrixB[5,4] = 'W'
+            self.matrixB[5,5] = 'B'
+        else:
+            raise Exception("startingConfig bound error")
+
+        self.scoreboard.updateScore(2,2)
 
 
 
@@ -130,7 +170,7 @@ class Board:
 
 # if Board.py is top-level module, run main. (used only for testing)
 if(__name__ == "__main__"):
-    b = Board('B')
+    b = Board( 'W', 'B', 1, 'B')
     b.printBoard()
     print b.getTurn()
     b.move(6,'E')
