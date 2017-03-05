@@ -9,8 +9,12 @@ class Rules:
         if(not __canMove(matrix)):
             return True
         return False
-
-
+        
+    #Checks to see if a move is a legal move or not.
+    #x and y are the values from the matrixB
+    #matrixB is the board
+    #turn is the person's turn to move ('W' or 'B')
+    #move is the direction that the search is attempting to go.
     def isLegalMove(self,x,y,matrixB,turn):
         if(matrixB[x,y] != '-'):
             return False
@@ -33,13 +37,8 @@ class Rules:
             return True
         return False
 
-
-    def __isLegalHelp(self,x,y,matrixB,turn,move,score):
-        if turn == "W":
-            opp = "B"
-        elif(turn == 'B'):
-            opp = "W"
-
+    #returns the edited x and y coordinates for the function __isLegalHelp
+    def __getCoordinate(self,x,y,move):
         if(move=='U'):
             x-=1
         elif(move == 'UR'):
@@ -60,78 +59,32 @@ class Rules:
         elif(move == 'UL'):
             x-=1
             y-=1
+        return x,y
+
+    #x and y are the values from the matrixB
+    #matrixB is the board
+    #turn is the person's turn to move ('W' or 'B')
+    #score is the amount of chips to be fliped,if any
+    #move is the direction that the search is attempting to go.
+    def __isLegalHelp(self,x,y,matrixB,turn,move,score):
+        if turn == "W":
+            opp = "B"
+        elif(turn == 'B'):
+            opp = "W"
+
+        x,y = self.__getCoordinate(x,y,move)
 
         try:
             if(matrixB[x,y] == opp):
                 score+=1
                 return self.__isLegalHelp(x,y,matrixB,turn,move,score)
             elif(matrixB[x,y] == turn):
-
                 return score > 0
-
             else:
                 return False
+        #if out of bounds
         except:
             return False
-
-        '''
-        print(turn)
-        print x,y
-        checkSides = False
-        print(matrixB[x,y-1])
-
-        if turn == 'W':
-            opp = 'B'
-        else:
-            opp = 'W'
-        for i in range(8):
-            print x,y
-            if(matrixB[x,y] != '-' and checkSides == False):
-                return False
-            elif(matrixB[x,y] == '-' and checkSides == True):
-                return True
-            #temp, doesn't make the edges work correctly
-            if(matrixB[x-1,y] == opp):
-                print "Up 1"
-                x-=1
-                checkSides = True
-            elif(matrixB[x-1,y-1]== opp):
-                print "up left 1"
-                x-=1
-                y-=1
-                checkSides = True
-            elif(matrixB[x-1,y] == opp):
-                print "left 1"
-                x-=1
-                checkSides = True
-            elif(matrixB[x-1,y+1] == opp):
-                print "down left 1"
-                x-=1
-                y+=1
-                checkSides = True
-            elif(matrixB[x,y+1] ==opp):
-                print "down 1"
-                y+=1
-                checkSides = True
-            elif(matrixB[x+1,y+1] ==opp):
-                print "down right 1"
-                y+=1
-                x+=1
-                checkSides = True
-            elif(matrixB[x+1,y] ==opp):
-                print "right 1"
-                x+=1
-                checkSides = True
-            elif(matrixB[x+1,y-1] ==opp):
-                print "up right 1"
-                x+=1
-                y-=1
-                checkSides = True
-            else:
-                return checkSides
-
-                '''
-
 
     # checks if a proposed move is valid
     def checkLegalMove(self, matrix, x, y):
