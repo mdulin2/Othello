@@ -1,5 +1,14 @@
+
+
 import numpy as np
 from rules import Rules
+
+
+#Highlights the font when printed
+class color:
+    WARNING = '\033[93m'
+    END = '\033[0m'
+
 
 # turn can flip between 'W' and 'B'
 class Turn:
@@ -66,17 +75,40 @@ class Board:
     def getTurn(self):
         return self.turn.getTurn()
 
+    #highlights the changes that were made in the previous move
+    def highLight(self,oldMatrix):
+        for i in range(0,9):
+            for j in range(0,9):
+                if(self.matrixB[i,j] != oldMatrix[i,j]):
+                    print(color.WARNING + self.matrixB[i,j] + color.END),
+                else:
+                    print self.matrixB[i,j],
+            print
+    def getNumberOfChanges(self,oldMatrix):
+        count = 0
+        for i in range(0,9):
+            for j in range(0,9):
+                if(self.matrixB[i,j] != oldMatrix[i,j]):
+                    count+=1
+        return count
     #x and y are the coordinate points that correspond to the matrix.
     #The ____move____s alternate so it's easy to have two people, or one and an A.I. play
     def move(self,x,y):
         #should be a check legal __move__ function here for the x and y coordinate
+
         if(self.__isLegalMove(x,y)):
-
             y = self.__changeY(y)
-            print(self.rules.isLegalMove(x,y,self.matrixB,self.turn.getTurn()))
-            self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
 
+            self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
+            oldMatrix = np.copy(self.matrixB)
+
+            self.matrixB,score = self.rules.flipChipString(x,y,self.matrixB,self.turn.getTurn())
+            self.highLight(oldMatrix)
+            print("changes! : ",self.getNumberOfChanges(oldMatrix))
+
+            #flips the turns
             self.turn.flip()
+            #scorring the game
             wScore,bScore = self.getScore()
             self.scoreboard.updateScore(wScore,bScore)
 
@@ -143,13 +175,15 @@ class Board:
         #need to establish this as an integer otherwise it may cause errors
         return int(chr(ord(y)-16))
 
+
     # checks if a submitted move is legal.
     # - checks valid input characters
     # - checks if the spot is open
     # - checks if the move is Othello-legal
     def __isLegalMove(self,x,y):
         if(self.__checkInput(x,y) and self.__isSpotOpen(x,y)):
-            return self.rules.checkLegalMove(self.matrixB, x, y)
+            y = self.__changeY(y)
+            return self.rules.isLegalMove(x,y,self.matrixB,self.turn.getTurn())
         return False
 
     #Checks to make sure that the x and y input are valid characters for the board.
@@ -175,7 +209,39 @@ if(__name__ == "__main__"):
     b = Board( 'W', 'B', 1, 'B')
     b.printBoard()
     print b.getTurn()
-    b.move(3,'E')
+    b.move(3,'D')
 
+
+    
+    b.move(3,'C')
+    b.printBoard()
+    b.move(4,'C')
+    b.printBoard()
+    print(b.getTurn())
+    b.move(5,'C')
+    b.printBoard()
+    b.move(4,'B')
+    b.move(2,'D')
+    print(b.getTurn())
+    b.printBoard()
+    b.move(2,'C')
+    b.printBoard()
+    b.move(4,'A')
+    b.printBoard()
+    b.move(1,'D')
+    b.printBoard()
+    b.move(2,'B')
+    b.printBoard()
+    b.move(6,'D')
+    b.printBoard()
+    b.move(3,'E')
+    b.printBoard()
+    b.move(4,'F')
+    b.printBoard()
+    b.move(2,'E')
+    b.printBoard()
+    b.move(1,'E')
+    b.printBoard()
+    b.move(4,'G')
     b.printBoard()
     print b.getTurn()
