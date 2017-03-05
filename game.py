@@ -25,14 +25,17 @@ class Game:
     def playGame(self, turnTime):
         self.__AIturnTime = turnTime
 
-        while(not self.board.isFull()):
+        while(not self.board.isGameOver()):
 
             if(self.__player == self.__turn.getTurn()):
+                print("Player's turn to move.")
                 self.__playerTurn()
             else:
+                print("AI's turn to move.")
                 self.__playAIturn()
 
-            self.board.printBoard()
+            self.__turn.flip()
+            self.board.highLightPrint()
 
 
     ############################
@@ -42,7 +45,7 @@ class Game:
     def __getInit(self):
         board = Board('w','B', 'W', 'B')
         board.printBoard()
-        self.__player, self.__AI = self.__setPlayers()
+        self.__setPlayers()
         if(self.__player == 'B'):
             board = Board(self.__player, self.__AI, 'W', 'B')
         return board
@@ -51,38 +54,48 @@ class Game:
     # asks the user who will be white or black between the player and the AI
     # repeats unitl proper input
     def __setPlayers(self):
-        player = raw_input("Choose token for Player (W/B): ")
+        player = ''
+        while(not self.__validSetPlayers(player)):
+            player = raw_input("Choose token for Player (W/B): ")
 
-        if(player == 'W' or player == 'w'):
-            print("Player set to be: 'W'")
-            print("AI set to be: 'B'")
-            return 'W', 'B'
-        elif(player == 'B' or player == 'b'):
-            print("Player set to be: 'B'")
-            print("AI set to be: 'W'")
-            return 'B', 'W'
+            self.__player = player
+            if(player == 'W' or player == 'w'):
+                print("Player set to be: 'W'")
+                self.__AI = 'B'
+                print("AI set to be: 'B'")
+            elif(player == 'B' or player == 'b'):
+                print("Player set to be: 'B'")
+                self.__AI = 'W'
+                print("AI set to be: 'W'")
+
+
+    # checks input for setting the player tokens.
+    # returns true for valid input.
+    def __validSetPlayers(self, player):
+        if(player == 'w' or player == 'W'):
+            return True
         else:
-            self.__setPlayers()
-
+            return (player == 'B' or player == 'b')
 
 
     # logic for a player's turn using terminal inputs.
     def __playerTurn(self):
-        print("Player's turn to move.")
-        x = raw_input("Enter X coordinate: ")
-        y = raw_input("Enter Y coordinate: ")
-        self.board.move(x,y)
+        hasMoved = False
+        while not hasMoved:
+            x = raw_input("Enter X number: ")
+            y = int(raw_input("Enter Y character: "))
+            hasMoved = self.board.move(x,y)
 
-        self.__turn.flip()
 
-
-    # logic for calling the AI to make a move.
+    # logic for calling the AI to make a move. Temporarily is done
+    # through user input.
     def __playAIturn(self):
         self.__AIplayed == False
-        print("AI's turn to move.")
-        x = raw_input("Enter X coordinate: ")
-        y = raw_input("Enter Y coordinate: ")
-        self.board.move(x,y)
+        hasMoved = False
+        while not hasMoved:
+            x = raw_input("Enter X number: ")
+            y = int(raw_input("Enter Y character: "))
+            hasMoved = self.board.move(x,y)
         '''
         timeThread = threading.Thread(target=self.__timer, args=())
         AIThread = threading.Thread(target=self.__runAI, args=())
@@ -93,7 +106,6 @@ class Game:
         timeThread.join()
         AIThread.join()
         '''
-        self.__turn.flip()
 
 
     # counts down from 10, waiting for __AIplayed to be true.

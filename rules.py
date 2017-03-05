@@ -5,11 +5,12 @@ class Rules:
     #this needs to check if either player cannot move
     # returns true if the game is over. false otherwise
     def isGameOver(self, matrix):
-        if(__isFull(matrix)):
+        if(self.__isFull(matrix)):
             return True
-        if(not __canMove(matrix)):
+        if((not self.getCanMove(matrix, 'B')) or (not self.getCanMove(matrix, 'W'))):
             return True
         return False
+
     #return true if the user is able to move, false otherwise
     def getCanMove(self,matrixB,turn):
         return self.__canMove(matrixB,turn)
