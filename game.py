@@ -1,22 +1,52 @@
 import numpy as np
 from Board import Board
+from Board import Turn
+import threading
+import time
 
+'''
+TODO max
+'''
 
 class Game:
 
+    # initialize board conditions to game specifications.
     def __init__(self):
-        player, AI = self.__setPlayers()
-        startConfig = self.__setConfig()
-        startTurn = self.__setStartTurn()
-        board = Board(player, AI, startConfig, startTurn)
-        board.printBoard()
+        self.__turn = Turn('B')
+        self.__AIplayed = False
+        self.__AIturnTime = 10      # in seconds
+        self.__player = ''
+        self.__AI = ''
+        self.board = self.__getInit()
 
-    def playGame(self):
-        pass
+
+    # plays a standard game of Othello with an option to adjust the length
+    # of a turn. Param: turnTime, seconds as an int.
+    def playGame(self, turnTime):
+        self.__AIturnTime = turnTime
+
+        while(not self.board.isFull()):
+
+            if(self.__player == self.__turn.getTurn()):
+                self.__playerTurn()
+            else:
+                self.__playAIturn()
+
+            self.board.printBoard()
+
 
     ############################
             #PRIVATE
     ############################
+
+    def __getInit(self):
+        board = Board('w','B', 'W', 'B')
+        board.printBoard()
+        self.__player, self.__AI = self.__setPlayers()
+        if(self.__player == 'B'):
+            board = Board(self.__player, self.__AI, 'W', 'B')
+        return board
+
 
     # asks the user who will be white or black between the player and the AI
     # repeats unitl proper input
@@ -35,30 +65,56 @@ class Game:
             self.__setPlayers()
 
 
-    # gets the decision of original board configuration from the user.
-    # repeats until proper input
-    def __setConfig(self):
-        topLeft = raw_input("who starts upper left (W/B)? ")
 
-        if(topLeft == 'W' or topLeft == 'w'):
-            return 'W'
-        elif(topLeft == 'B' or topLeft == 'b'):
-            return 'b'
-        else:
-            self.__setConfig()
+    # logic for a player's turn using terminal inputs.
+    def __playerTurn(self):
+        print("Player's turn to move.")
+        x = raw_input("Enter X coordinate: ")
+        y = raw_input("Enter Y coordinate: ")
+        self.board.move(x,y)
 
-    # gets the decision of who plays first from the user
-    # repeats until proper input
-    def __setStartTurn(self):
-        start = raw_input("Which token gets to play first (W/B)? ")
+        self.__turn.flip()
 
-        if(start == 'W' or start == 'w'):
-            return 'W'
-        elif(start == 'B' or start == 'b'):
-            return 'B'
-        else:
-            self.__setStartTurn()
 
+    # logic for calling the AI to make a move.
+    def __playAIturn(self):
+        self.__AIplayed == False
+        print("AI's turn to move.")
+        x = raw_input("Enter X coordinate: ")
+        y = raw_input("Enter Y coordinate: ")
+        self.board.move(x,y)
+        '''
+        timeThread = threading.Thread(target=self.__timer, args=())
+        AIThread = threading.Thread(target=self.__runAI, args=())
+
+        timeThread.start()
+        AIThread.start()
+
+        timeThread.join()
+        AIThread.join()
+        '''
+        self.__turn.flip()
+
+
+    # counts down from 10, waiting for __AIplayed to be true.
+    # if __AIplayed never evaluates to true, prints to terminal (currently).
+    def __timer(self):
+        print "AI timer:"
+        for i in range(self.__AIturnTime, 0, -1):
+            print i
+            time.sleep(1)
+            if(self.__AIplayed == True):
+                return True
+        print "AI did not play in time. "
+
+
+    # temporary bot for an AI
+    def __runAI(self):
+        time.sleep(3)
+        self.__AIplayed = True
+
+
+# runs the base game of Othello
 if(__name__ == "__main__"):
     game = Game()
-    game.playGame()
+    game.playGame(10)
