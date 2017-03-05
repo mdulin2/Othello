@@ -2,7 +2,6 @@ import numpy as np
 
 
 class Rules:
-
     # returns true if the game is over. false otherwise
     def isGameOver(self, matrix):
         if(__isFull(matrix)):
@@ -12,65 +11,126 @@ class Rules:
         return False
 
 
-    def calcLegalMove(self,x,y,matrixB,turn):
+    def isLegalMove(self,x,y,matrixB,turn):
+        if(matrixB[x,y] != '-'):
+            return False
 
+        if(self.__isLegalHelp(x,y,matrixB,turn,'U',0)):
+            return True
+        if(self.__isLegalHelp(x,y,matrixB,turn,'UR',0)):
+            return True
+        if(self.__isLegalHelp(x,y,matrixB,turn,'R',0)):
+            return True
+        if(self.__isLegalHelp(x,y,matrixB,turn,'DR',0)):
+            return True
+        if(self.__isLegalHelp(x,y,matrixB,turn,'D',0)):
+            return True
+        if(self.__isLegalHelp(x,y,matrixB,turn,'DL',0)):
+            return True
+        if(self.__isLegalHelp(x,y,matrixB,turn,'L',0)):
+            return True
+        if(self.__isLegalHelp(x,y,matrixB,turn,'UL',0)):
+            return True
+        return False
+
+
+    def __isLegalHelp(self,x,y,matrixB,turn,move,score):
+        if turn == "W":
+            opp = "B"
+        elif(turn == 'B'):
+            opp = "W"
+
+        if(move=='U'):
+            x-=1
+        elif(move == 'UR'):
+            y+=1
+            x+=1
+        elif(move == 'R'):
+            y+=1
+        elif(move == 'DR'):
+            x+=1
+            y+=1
+        elif(move == 'D'):
+            x+=1
+        elif(move == 'DL'):
+            y-=1
+            x+=1
+        elif(move == 'L'):
+            y-=1
+        elif(move == 'UL'):
+            x-=1
+            y-=1
+
+        try:
+            if(matrixB[x,y] == opp):
+                score+=1
+                return self.__isLegalHelp(x,y,matrixB,turn,move,score)
+            elif(matrixB[x,y] == turn):
+
+                return score > 0
+
+            else:
+                return False
+        except:
+            return False
+
+        '''
+        print(turn)
         print x,y
         checkSides = False
-        print(matrixB[x-1,y])
+        print(matrixB[x,y-1])
 
         if turn == 'W':
-            notTurn = 'B'
+            opp = 'B'
         else:
-            notTurn = 'W'
+            opp = 'W'
         for i in range(8):
-
+            print x,y
             if(matrixB[x,y] != '-' and checkSides == False):
                 return False
             elif(matrixB[x,y] == '-' and checkSides == True):
                 return True
             #temp, doesn't make the edges work correctly
-            if(matrixB[x-1,y] == notTurn):
+            if(matrixB[x-1,y] == opp):
                 print "Up 1"
-                y-=1
+                x-=1
                 checkSides = True
-            elif(matrixB[x-1,y-1]== notTurn):
+            elif(matrixB[x-1,y-1]== opp):
                 print "up left 1"
                 x-=1
                 y-=1
                 checkSides = True
-            elif(matrixB[x-1,y] == notTurn):
+            elif(matrixB[x-1,y] == opp):
                 print "left 1"
                 x-=1
                 checkSides = True
-            elif(matrixB[x-1,y+1] == notTurn):
+            elif(matrixB[x-1,y+1] == opp):
                 print "down left 1"
                 x-=1
                 y+=1
                 checkSides = True
-            elif(matrixB[x,y+1] ==notTurn):
+            elif(matrixB[x,y+1] ==opp):
                 print "down 1"
                 y+=1
                 checkSides = True
-            elif(matrixB[x+1,y+1] ==notTurn):
+            elif(matrixB[x+1,y+1] ==opp):
                 print "down right 1"
                 y+=1
                 x+=1
                 checkSides = True
-            elif(matrixB[x+1,y] ==notTurn):
+            elif(matrixB[x+1,y] ==opp):
                 print "right 1"
                 x+=1
                 checkSides = True
-            elif(matrixB[x+1,y-1] ==notTurn):
+            elif(matrixB[x+1,y-1] ==opp):
                 print "up right 1"
                 x+=1
                 y-=1
                 checkSides = True
             else:
-                print "none"
-
                 return checkSides
 
-
+                '''
 
 
     # checks if a proposed move is valid

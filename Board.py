@@ -89,7 +89,7 @@ class Board:
 
             self.__prevMatrix = self.matrixB
             y = self.__changeY(y)
-            print(self.rules.calcLegalMove(x,y,self.matrixB,self.turn.getTurn()))
+            print(self.rules.isLegalMove(x,y,self.matrixB,self.turn.getTurn()))
             self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
 
             self.turn.flip()
@@ -204,6 +204,7 @@ if(__name__ == "__main__"):
     b = Board( 'W', 'B', 1, 'B')
     b.printBoard()
     print b.getTurn()
-    b.move(6,'E')
+    b.move(3,'E')
+
     b.printBoard()
     print b.getTurn()
