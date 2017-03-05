@@ -28,6 +28,7 @@ class Turn:
     def getTurn(self):
         return self.turn
 
+#Runs the scoreboard for the game.
 class ScoreBoard:
 
     # player and AI are either 'W' or 'B'. They cannot be the same
@@ -73,7 +74,7 @@ class Board:
         #should be set to config in the constructor
         self.__gameSetUp('1')
 
-
+    #red represents the move made.
     #highlights the changes that were made in the previous move
     def highLightPrint(self,x,y,oldMatrix):
         for i in range(0,9):
@@ -158,6 +159,7 @@ class Board:
         for i in range(1,9):
             self.matrixB[i,0] = i
 
+
     #Sets the starting pieces to the game without toggling the turn.
     # if config == 1, begins with 'B' in top left.
     # if config == 2, begins with 'W' in top left
@@ -184,7 +186,6 @@ class Board:
     def __changeY(self,y):
         #need to establish this as an integer otherwise it may cause errors
         return int(chr(ord(y)-16))
-
 
     # checks if a submitted move is legal.
     # - checks valid input characters
@@ -270,5 +271,5 @@ if(__name__ == "__main__"):
     b.move(5,'A')
     b.move(7,'G')
     b.move(3,'F')
-    b.move(8,'H')
+    
     print b.getTurn()
