@@ -1,6 +1,7 @@
 import numpy as np
 
 class Rules:
+
     #this needs to check if either player cannot move
     # returns true if the game is over. false otherwise
     def isGameOver(self, matrix):
@@ -9,7 +10,9 @@ class Rules:
         if(not __canMove(matrix)):
             return True
         return False
-
+    #return true if the user is able to move, false otherwise
+    def getCanMove(self,matrixB,turn):
+        return self.__canMove(matrixB,turn)
 
     #Checks to see if a move is a legal move or not.
     #x and y are the values from the matrixB
@@ -42,19 +45,20 @@ class Rules:
     # othello rules
     def insertMove(self, turn, matrix, x, y):
         matrix2 = self.__makeMove(turn, matrix, x, y)
-        return self.fixBoard(matrix2, x, y,turn)
+        return self.__fixBoard(matrix2, x, y,turn)
 
 
-    # flips all necessary chips after a move has been made.
-    # retuns resulting matrix.
-    def fixBoard(self,matrix,x,y,turn):
-        return self.__flipChipString(x,y,matrix,turn)
+
 
     ###########################
     # PRIVATE BELOW
     #########################
 
 
+    # flips all necessary chips after a move has been made.
+    # retuns resulting matrix.
+    def __fixBoard(self,matrix,x,y,turn):
+        return self.__flipChipString(x,y,matrix,turn)
 
     '''
     Flips all of the chips on the board that should be flipped in all directions.
@@ -242,7 +246,13 @@ class Rules:
                     return False
         return True
 
+#******Have not been able to test yet but the logic makes sense
     # returns true if there exists a space in which a player
     # can legally move. False otherwise.
-    def __canMove(self, matrix):
-        pass
+    def __canMove(self, matrix,turn):
+        for i in range(1,9):
+            for j in range(1,9):
+                if(matrix[i,j] == '-'):
+                    if(self.isLegalMove(i,j,matrix,turn)):
+                        return True
+        return False

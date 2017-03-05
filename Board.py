@@ -8,11 +8,11 @@ from rules import Rules
 class yellowColor:
     WARNING = '\033[93m'
     END = '\033[0m'
+
 #The move that was made by the player
 class redColor:
     FAIL = '\033[91m'
     END = '\033[0m'
-
 
 # turn can flip between 'W' and 'B'
 class Turn:
@@ -108,21 +108,20 @@ class Board:
     #The ____move____s alternate so it's easy to have two people, or one and an A.I. play
     def move(self,x,y):
         #should be a check legal __move__ function here for the x and y coordinate
-
+        print(self.rules.getCanMove(self.matrixB,self.turn.getTurn()))
         if(self.__isLegalMove(x,y)):
             y = self.__changeY(y)
             oldMatrix = np.copy(self.matrixB)
             self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
 
-
+            #scorring the game
+            wScore,bScore = self.getScore()
+            self.scoreboard.updateScore(wScore,bScore)
+            #prints out all of the scores
             self.highLightPrint(x,y,oldMatrix)
 
             #flips the turns
             self.turn.flip()
-            #scorring the game
-            wScore,bScore = self.getScore()
-            self.scoreboard.updateScore(wScore,bScore)
-
         else:
             raise Exception("Move Error")
 
@@ -137,6 +136,7 @@ class Board:
                     whiteScore += 1
                 elif(self.matrixB[i,j] == 'B'):
                     blackScore += 1
+        print "White",whiteScore
 
         return whiteScore,blackScore
 
@@ -221,7 +221,7 @@ class Board:
             for j in range(0,9):
                 if(self.matrixB[i,j] != oldMatrix[i,j]):
                     count+=1
-        return count
+        return count-1
 # if Board.py is top-level module, run main. (used only for testing)
 if(__name__ == "__main__"):
     b = Board( 'W', 'B', 1, 'B')
@@ -271,5 +271,15 @@ if(__name__ == "__main__"):
     b.move(5,'A')
     b.move(7,'G')
     b.move(3,'F')
-    
+    b.move(7,'C')
+    b.move(1,'F')
+    b.move(7,'F')
+    b.move(6,'G')
+    b.move(6,'A')
+    b.move(8,'C')
+    b.move(7,'B')
+    b.move(8,'A')
+    b.move(7,'D')
+    b.move(7,'H')
+
     print b.getTurn()
