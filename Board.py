@@ -29,16 +29,28 @@ class ScoreBoard:
         self.whiteScore = w
         self.blackScore = b
 
-    def displayScore(self):
-        print "----ScoreBoard----"
-        if(self.player == 'W'):
-            print ("Player Score: " + str(self.whiteScore))
-            print ("AI Score: " + str(self.blackScore))
-            print "------------------"
+    # displays the current score of the game.
+    # if the game is over, displays the winner of the game and the score.
+    def displayScore(self, gameOver):
+        if not gameOver:
+            if (self.whiteScore > self.blackScore):
+                winner = "White"
+                score = str(self.whiteScore + " " + self.blackScore)
+            else:
+                winner = "Black"
+                score = str(self.blackScore) + " to " + str(self.whiteScore)
+            print("Game Over! " + winner + " wins " + score)
+
         else:
-            print ("Player Score: " + str(self.blackScore))
-            print ("AI Score: " + str(self.whiteScore))
-            print "------------------"
+            print "----ScoreBoard----"
+            if(self.player == 'W'):
+                print ("Player Score: " + str(self.whiteScore))
+                print ("AI Score: " + str(self.blackScore))
+                print "------------------"
+            else:
+                print ("Player Score: " + str(self.blackScore))
+                print ("AI Score: " + str(self.whiteScore))
+                print "------------------"
 
 class Board:
 
@@ -56,11 +68,14 @@ class Board:
         self.turn = Turn(turn)
         # set up the game and initial Board
         self.__gameSetUp(config)
+        # a prior state matrixB
+        self.__prevMatrix = np.chararray((9,9))
+
 
     #this print function will display the contents of the board, matrixB
     def printBoard(self):
         print self.matrixB
-        self.scoreboard.displayScore()
+        self.scoreboard.displayScore(self.isFull())
 
     #returns the value of turn, either B for black or W for white.
     def getTurn(self):
@@ -72,6 +87,7 @@ class Board:
         #should be a check legal __move__ function here for the x and y coordinate
         if(self.__isLegalMove(x,y)):
 
+            self.__prevMatrix = self.matrixB
             y = self.__changeY(y)
             print(self.rules.calcLegalMove(x,y,self.matrixB,self.turn.getTurn()))
             self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
@@ -82,6 +98,7 @@ class Board:
 
         else:
             raise Exception("Move Error")
+
 
     # returns the score as two integer returns: white score followed by black.
     def getScore(self):
@@ -95,7 +112,19 @@ class Board:
                 elif(self.matrixB[i,j] == 'B'):
                     blackScore += 1
 
+
         return whiteScore,blackScore
+
+
+    # reverts the current board positions to the previous state.
+    # this is called in the event of a dispute.
+    def revertBoard(self):
+        self.matrixB = self.__prevMatrix.copy()
+
+    # returns true if the board is full (signifies game is over)
+    def isFull(self):
+        whites, blacks = self.getScore()
+        return((whites + blacks) == 64)
 
 
     ############################
