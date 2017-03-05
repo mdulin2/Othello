@@ -4,9 +4,13 @@ import numpy as np
 from rules import Rules
 
 
-#Highlights the font when printed
-class color:
+#Highlights the font when printed for the chips flipped
+class yellowColor:
     WARNING = '\033[93m'
+    END = '\033[0m'
+#The move that was made by the player
+class redColor:
+    FAIL = '\033[91m'
     END = '\033[0m'
 
 
@@ -69,31 +73,36 @@ class Board:
         #should be set to config in the constructor
         self.__gameSetUp('1')
 
+
+    #highlights the changes that were made in the previous move
+    def highLightPrint(self,x,y,oldMatrix):
+        for i in range(0,9):
+            for j in range(0,9):
+                if(i ==x and j == y):
+                    print(redColor.FAIL + "'" + self.matrixB[i,j] + "'" + redColor.END),
+                elif(self.matrixB[i,j] != oldMatrix[i,j]):
+                    print(yellowColor.WARNING + "'" +self.matrixB[i,j]+ "'" + yellowColor.END ),
+
+                else:
+                    print "'"+self.matrixB[i,j]+ "'",
+            print
+        print
+        self.scoreboard.displayScore()
     #this print function will display the contents of the board, matrixB
     def printBoard(self):
-        print self.matrixB
+        for i in range(0,9):
+            for j in range(0,9):
+                print "'"+self.matrixB[j,i]+ "'",
+            print
+        print
         self.scoreboard.displayScore()
 
     #returns the value of turn, either B for black or W for white.
     def getTurn(self):
         return self.turn.getTurn()
 
-    #highlights the changes that were made in the previous move
-    def highLight(self,oldMatrix):
-        for i in range(0,9):
-            for j in range(0,9):
-                if(self.matrixB[i,j] != oldMatrix[i,j]):
-                    print(color.WARNING + self.matrixB[i,j] + color.END),
-                else:
-                    print self.matrixB[i,j],
-            print
-    def getNumberOfChanges(self,oldMatrix):
-        count = 0
-        for i in range(0,9):
-            for j in range(0,9):
-                if(self.matrixB[i,j] != oldMatrix[i,j]):
-                    count+=1
-        return count
+
+
     #x and y are the coordinate points that correspond to the matrix.
     #The ____move____s alternate so it's easy to have two people, or one and an A.I. play
     def move(self,x,y):
@@ -101,13 +110,11 @@ class Board:
 
         if(self.__isLegalMove(x,y)):
             y = self.__changeY(y)
-
-            self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
             oldMatrix = np.copy(self.matrixB)
+            self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
 
-            self.matrixB,score = self.rules.flipChipString(x,y,self.matrixB,self.turn.getTurn())
-            self.highLight(oldMatrix)
-            print("changes! : ",self.getNumberOfChanges(oldMatrix))
+
+            self.highLightPrint(x,y,oldMatrix)
 
             #flips the turns
             self.turn.flip()
@@ -206,45 +213,62 @@ class Board:
         y = self.__changeY(y)
         return(self.matrixB[x,y] == '-')
 
-
+    #Given an oldmatrix it will find the amount of differences from board to board.
+    def __getNumberOfChanges(self,oldMatrix):
+        count = 0
+        for i in range(0,9):
+            for j in range(0,9):
+                if(self.matrixB[i,j] != oldMatrix[i,j]):
+                    count+=1
+        return count
 # if Board.py is top-level module, run main. (used only for testing)
 if(__name__ == "__main__"):
     b = Board( 'W', 'B', 1, 'B')
-    b.printBoard()
+
     print b.getTurn()
     b.move(3,'D')
-
-
-
     b.move(3,'C')
-    b.printBoard()
     b.move(4,'C')
-    b.printBoard()
     print(b.getTurn())
     b.move(5,'C')
-    b.printBoard()
     b.move(4,'B')
     b.move(2,'D')
     print(b.getTurn())
-    b.printBoard()
     b.move(2,'C')
-    b.printBoard()
     b.move(4,'A')
     b.printBoard()
     b.move(1,'D')
-    b.printBoard()
     b.move(2,'B')
-    b.printBoard()
     b.move(6,'D')
-    b.printBoard()
     b.move(3,'E')
-    b.printBoard()
     b.move(4,'F')
-    b.printBoard()
     b.move(2,'E')
-    b.printBoard()
+
     b.move(1,'E')
-    b.printBoard()
+
+    b.move(5,'G')
+    print b.getTurn()
+    b.move(5,'B')
+    b.move(2,'F')
+    b.move(3,'G')
+    b.move(6,'E')
+    b.move(1,'C')
     b.move(4,'G')
-    b.printBoard()
+    b.move(6,'H')
+    b.move(1,'B')
+    b.move(3,'B')
+    b.move(6,'B')
+    b.move(6,'C')
+    b.move(2,'H')
+    b.move(2,'G')
+    b.move(2,'A')
+    b.move(7,'E')
+    b.move(6,'F')
+    b.move(1,'A')
+    b.move(8,'E')
+    b.move(3,'A')
+    b.move(5,'A')
+    b.move(7,'G')
+    b.move(3,'F')
+    b.move(8,'H')
     print b.getTurn()

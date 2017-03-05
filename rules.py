@@ -1,6 +1,7 @@
 import numpy as np
 
 class Rules:
+    #this needs to check if either player cannot move
     # returns true if the game is over. false otherwise
     def isGameOver(self, matrix):
         if(__isFull(matrix)):
@@ -9,13 +10,59 @@ class Rules:
             return True
         return False
 
+
+    #Checks to see if a move is a legal move or not.
+    #x and y are the values from the matrixB
+    #matrixB is the board
+    #turn is the person's turn to move ('W' or 'B')
+    #move is the direction that the search is attempting to go.
+    def isLegalMove(self,x,y,matrixB,turn):
+        if(matrixB[x,y] != '-'):
+            return False
+        if(self.__isLegalHelper(x,y,matrixB,turn,'U',0)):
+            return True
+        if(self.__isLegalHelper(x,y,matrixB,turn,'UR',0)):
+            return True
+        if(self.__isLegalHelper(x,y,matrixB,turn,'R',0)):
+            return True
+        if(self.__isLegalHelper(x,y,matrixB,turn,'DR',0)):
+            return True
+        if(self.__isLegalHelper(x,y,matrixB,turn,'D',0)):
+            return True
+        if(self.__isLegalHelper(x,y,matrixB,turn,'DL',0)):
+            return True
+        if(self.__isLegalHelper(x,y,matrixB,turn,'L',0)):
+            return True
+        if(self.__isLegalHelper(x,y,matrixB,turn,'UL',0)):
+            return True
+        return False
+
+    # given a previous state matrix and coordinates for insertion,
+    # makes a move and flips all necessary chips according to
+    # othello rules
+    def insertMove(self, turn, matrix, x, y):
+        matrix2 = self.__makeMove(turn, matrix, x, y)
+        return self.fixBoard(matrix2, x, y,turn)
+
+
+    # flips all necessary chips after a move has been made.
+    # retuns resulting matrix.
+    def fixBoard(self,matrix,x,y,turn):
+        return self.__flipChipString(x,y,matrix,turn)
+
+    ###########################
+    # PRIVATE BELOW
+    #########################
+
+
+
     '''
     Flips all of the chips on the board that should be flipped in all directions.
     maxtrix B is the board
     Turn is the player that made that move to change the board
     Each line in this changes a particular path of the board, if needed.
     '''
-    def flipChipString(self,x,y,matrixB,turn):
+    def __flipChipString(self,x,y,matrixB,turn):
 
         matrixB,score1 = self.__flipChipStringHelper(x,y,matrixB,turn,'U',0) #up
 
@@ -33,8 +80,7 @@ class Rules:
 
         matrixB,score8 = self.__flipChipStringHelper(x,y,matrixB,turn,'UL',0) #up left
 
-        total = score1 + score2 + score3 + score4 + score5 + score6 + score7 + score8
-        return matrixB,total
+        return matrixB
 
     '''
     matrixB is the board, x and y are the coordinates on the board.
@@ -51,7 +97,7 @@ class Rules:
         x,y = self.__getCoordinate(x,y,move)
 
         #checks to see if the line needs to be changed.
-        tmp,score = self.lineCheck(x,y,matrixB,turn,move)
+        tmp,score = self.__lineCheck(x,y,matrixB,turn,move)
         score+=oldscore
         if(tmp):
             if(matrixB[x,y] == opp):
@@ -72,7 +118,7 @@ class Rules:
     turn is the person who just made the move to change the board.
     move is the direction that is being checked
     '''
-    def lineCheck(self,x,y,matrixB,turn,move):
+    def __lineCheck(self,x,y,matrixB,turn,move):
         #each line has a particular direction that it checks
         if(move =='U'):
             return self.__lineCheckHelper(x,y,matrixB,turn,'U',0)
@@ -120,57 +166,6 @@ class Rules:
             return False,score
 
 
-    #Checks to see if a move is a legal move or not.
-    #x and y are the values from the matrixB
-    #matrixB is the board
-    #turn is the person's turn to move ('W' or 'B')
-    #move is the direction that the search is attempting to go.
-    def isLegalMove(self,x,y,matrixB,turn):
-        if(matrixB[x,y] != '-'):
-            return False
-
-        if(self.__isLegalHelper(x,y,matrixB,turn,'U',0)):
-            return True
-        if(self.__isLegalHelper(x,y,matrixB,turn,'UR',0)):
-            return True
-        if(self.__isLegalHelper(x,y,matrixB,turn,'R',0)):
-            return True
-        if(self.__isLegalHelper(x,y,matrixB,turn,'DR',0)):
-            return True
-        if(self.__isLegalHelper(x,y,matrixB,turn,'D',0)):
-            return True
-        if(self.__isLegalHelper(x,y,matrixB,turn,'DL',0)):
-            return True
-        if(self.__isLegalHelper(x,y,matrixB,turn,'L',0)):
-            return True
-        if(self.__isLegalHelper(x,y,matrixB,turn,'UL',0)):
-            return True
-        return False
-
-    #returns the edited x and y coordinates for the function __isLegalHelper
-    def __getCoordinate(self,x,y,move):
-        if(move=='U'):
-            x-=1
-        elif(move == 'UR'):
-            y+=1
-            x+=1
-        elif(move == 'R'):
-            y+=1
-        elif(move == 'DR'):
-            x+=1
-            y+=1
-        elif(move == 'D'):
-            x+=1
-        elif(move == 'DL'):
-            y-=1
-            x+=1
-        elif(move == 'L'):
-            y-=1
-        elif(move == 'UL'):
-            x-=1
-            y-=1
-        return x,y
-
     #x and y are the values from the matrixB
     #matrixB is the board
     #turn is the person's turn to move ('W' or 'B')
@@ -196,32 +191,35 @@ class Rules:
         except:
             return False
 
-    # checks if a proposed move is valid
-    def checkLegalMove(self, matrix, x, y):
-        return True
 
-    # given a previous state matrix and coordinates for insertion,
-    # makes a move and flips all necessary chips according to
-    # othello rules
-    def insertMove(self, turn, matrix, x, y):
-        matrix = self.__makeMove(turn, matrix, x, y)
-        return self.__fixBoard(turn, matrix, x, y)
+    #returns the edited x and y coordinates for the function __isLegalHelper
+    def __getCoordinate(self,x,y,move):
+        if(move=='U'):
+            x-=1
+        elif(move == 'UR'):
+            y+=1
+            x-=1
+        elif(move == 'R'):
+            y+=1
+        elif(move == 'DR'):
+            x+=1
+            y+=1
+        elif(move == 'D'):
+            x+=1
+        elif(move == 'DL'):
+            y-=1
+            x+=1
+        elif(move == 'L'):
+            y-=1
+        elif(move == 'UL'):
+            x-=1
+            y-=1
+        return x,y
 
 
-    #
-    # PRIVATE BELOW
-    #
-
-    # inserts the move into the matrix. Returns new matrix
     def __makeMove(self,turn, matrix, x, y):
         matrix[x,y] = turn
         return matrix
-
-    # flips all necessary chips after a move has been made.
-    # retuns resulting matrix.
-    def __fixBoard(self,turn,matrix,x,y):
-        return matrix
-
 
     # flips the color of the chip in the x,y location of the
     # passed in matrix. returns resulting matrix
