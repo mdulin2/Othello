@@ -32,7 +32,7 @@ class ScoreBoard:
     # displays the current score of the game.
     # if the game is over, displays the winner of the game and the score.
     def displayScore(self, gameOver):
-        if not gameOver:
+        if gameOver:
             if (self.whiteScore > self.blackScore):
                 winner = "White"
                 score = str(self.whiteScore + " " + self.blackScore)
@@ -56,7 +56,7 @@ class Board:
 
     # Constructor for the Board. Turn defaults to Black.
     # player and AI are either 'W' or 'B'.
-    # config is either 1 or 2. 1 if 'W' starts top left, 2 if flipped.
+    # config is either 'W' or 'B' for who starts top left.
     def __init__(self, player, AI, config, turn='B'):
         # initialize scoreboard with correct player names
         self.scoreboard = ScoreBoard(player, AI)
@@ -112,7 +112,6 @@ class Board:
                 elif(self.matrixB[i,j] == 'B'):
                     blackScore += 1
 
-
         return whiteScore,blackScore
 
 
@@ -132,7 +131,7 @@ class Board:
     ############################
 
     #Running the initial set ups for the game.
-    def __gameSetUp(self, config=1):
+    def __gameSetUp(self, config='W'):
         self.__createBoard()
         self.__startingBoard(config)
 
@@ -146,15 +145,15 @@ class Board:
             self.matrixB[i,0] = i
 
     #Sets the starting pieces to the game without toggling the turn.
-    # if config == 1, begins with 'B' in top left.
-    # if config == 2, begins with 'W' in top left
+    # if config == 'B', begins with 'B' in top left.
+    # if config == 'W', begins with 'W' in top left
     def __startingBoard(self, config):
-        if(config == 1):
+        if(config == 'W'):
             self.matrixB[4,5] = 'B'
             self.matrixB[4,4] = 'W'
             self.matrixB[5,4] = 'B'
             self.matrixB[5,5] = 'W'
-        elif(config == 2):
+        elif(config == 'B'):
             self.matrixB[4,5] = 'W'
             self.matrixB[4,4] = 'B'
             self.matrixB[5,4] = 'W'
