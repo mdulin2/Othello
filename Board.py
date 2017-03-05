@@ -140,13 +140,22 @@ class Board:
 
         return whiteScore,blackScore
 
+    # reverts the current board positions to the previous state.
+    # this is called in the event of a dispute.
+    def revertBoard(self):
+        self.matrixB = self.__prevMatrix.copy()
+
+    # returns true if the board is full (signifies game is over)
+    def isFull(self):
+        whites, blacks = self.getScore()
+        return((whites + blacks) == 64)
 
     ############################
             #PRIVATE
     ############################
 
     #Running the initial set ups for the game.
-    def __gameSetUp(self, config=1):
+    def __gameSetUp(self, config='W'):
         self.__createBoard()
         self.__startingBoard(config)
 
@@ -164,12 +173,12 @@ class Board:
     # if config == 1, begins with 'B' in top left.
     # if config == 2, begins with 'W' in top left
     def __startingBoard(self, config):
-        if(config == '1'):
+        if(config == 'W'):
             self.matrixB[4,5] = 'B'
             self.matrixB[4,4] = 'W'
             self.matrixB[5,4] = 'B'
             self.matrixB[5,5] = 'W'
-        elif(config == '2'):
+        elif(config == 'B'):
             self.matrixB[4,5] = 'W'
             self.matrixB[4,4] = 'B'
             self.matrixB[5,4] = 'W'
