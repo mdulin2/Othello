@@ -72,7 +72,7 @@ class Board:
 
         #***NOte::: I changed this so i could test my code
         #should be set to config in the constructor
-        self.__gameSetUp('1')
+        self.__gameSetUp(config = 'A')
 
     #red represents the move made.
     #highlights the changes that were made in the previous move
@@ -173,6 +173,7 @@ class Board:
     # if config == 1, begins with 'B' in top left.
     # if config == 2, begins with 'W' in top left
     def __startingBoard(self, config):
+        print config
         if(config == 'W'):
             self.matrixB[4,5] = 'B'
             self.matrixB[4,4] = 'W'
