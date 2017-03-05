@@ -1,14 +1,5 @@
-
-
 import numpy as np
 from rules import Rules
-
-
-#Highlights the font when printed
-class color:
-    WARNING = '\033[93m'
-    END = '\033[0m'
-
 
 # turn can flip between 'W' and 'B'
 class Turn:
@@ -38,34 +29,22 @@ class ScoreBoard:
         self.whiteScore = w
         self.blackScore = b
 
-    # displays the current score of the game.
-    # if the game is over, displays the winner of the game and the score.
-    def displayScore(self, gameOver):
-        if gameOver:
-            if (self.whiteScore > self.blackScore):
-                winner = "White"
-                score = str(self.whiteScore + " " + self.blackScore)
-            else:
-                winner = "Black"
-                score = str(self.blackScore) + " to " + str(self.whiteScore)
-            print("Game Over! " + winner + " wins " + score)
-
+    def displayScore(self):
+        print "----ScoreBoard----"
+        if(self.player == 'W'):
+            print ("Player Score: " + str(self.whiteScore))
+            print ("AI Score: " + str(self.blackScore))
+            print "------------------"
         else:
-            print "----ScoreBoard----"
-            if(self.player == 'W'):
-                print ("Player Score: " + str(self.whiteScore))
-                print ("AI Score: " + str(self.blackScore))
-                print "------------------"
-            else:
-                print ("Player Score: " + str(self.blackScore))
-                print ("AI Score: " + str(self.whiteScore))
-                print "------------------"
+            print ("Player Score: " + str(self.blackScore))
+            print ("AI Score: " + str(self.whiteScore))
+            print "------------------"
 
 class Board:
 
     # Constructor for the Board. Turn defaults to Black.
     # player and AI are either 'W' or 'B'.
-    # config is either 'W' or 'B' for who starts top left.
+    # config is either 1 or 2. 1 if 'W' starts top left, 2 if flipped.
     def __init__(self, player, AI, config, turn='B'):
         # initialize scoreboard with correct player names
         self.scoreboard = ScoreBoard(player, AI)
@@ -77,62 +56,32 @@ class Board:
         self.turn = Turn(turn)
         # set up the game and initial Board
         self.__gameSetUp(config)
-        # a prior state matrixB
-        self.__prevMatrix = np.chararray((9,9))
-
 
     #this print function will display the contents of the board, matrixB
     def printBoard(self):
         print self.matrixB
-        self.scoreboard.displayScore(self.isFull())
+        self.scoreboard.displayScore()
 
     #returns the value of turn, either B for black or W for white.
     def getTurn(self):
         return self.turn.getTurn()
 
-    #highlights the changes that were made in the previous move
-    def highLight(self,oldMatrix):
-        for i in range(0,9):
-            for j in range(0,9):
-                if(self.matrixB[i,j] != oldMatrix[i,j]):
-                    print(color.WARNING + self.matrixB[i,j] + color.END),
-                else:
-                    print self.matrixB[i,j],
-            print
-    def getNumberOfChanges(self,oldMatrix):
-        count = 0
-        for i in range(0,9):
-            for j in range(0,9):
-                if(self.matrixB[i,j] != oldMatrix[i,j]):
-                    count+=1
-        return count
     #x and y are the coordinate points that correspond to the matrix.
     #The ____move____s alternate so it's easy to have two people, or one and an A.I. play
     def move(self,x,y):
         #should be a check legal __move__ function here for the x and y coordinate
-
         if(self.__isLegalMove(x,y)):
-            y = self.__changeY(y)
 
-            self.__prevMatrix = self.matrixB
             y = self.__changeY(y)
             print(self.rules.isLegalMove(x,y,self.matrixB,self.turn.getTurn()))
             self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
-            oldMatrix = np.copy(self.matrixB)
 
-            self.matrixB,score = self.rules.flipChipString(x,y,self.matrixB,self.turn.getTurn())
-            self.highLight(oldMatrix)
-            print("changes! : ",self.getNumberOfChanges(oldMatrix))
-
-            #flips the turns
             self.turn.flip()
-            #scorring the game
             wScore,bScore = self.getScore()
             self.scoreboard.updateScore(wScore,bScore)
 
         else:
             raise Exception("Move Error")
-
 
     # returns the score as two integer returns: white score followed by black.
     def getScore(self):
@@ -149,23 +98,12 @@ class Board:
         return whiteScore,blackScore
 
 
-    # reverts the current board positions to the previous state.
-    # this is called in the event of a dispute.
-    def revertBoard(self):
-        self.matrixB = self.__prevMatrix.copy()
-
-    # returns true if the board is full (signifies game is over)
-    def isFull(self):
-        whites, blacks = self.getScore()
-        return((whites + blacks) == 64)
-
-
     ############################
             #PRIVATE
     ############################
 
     #Running the initial set ups for the game.
-    def __gameSetUp(self, config='W'):
+    def __gameSetUp(self, config=1):
         self.__createBoard()
         self.__startingBoard(config)
 
@@ -179,15 +117,15 @@ class Board:
             self.matrixB[i,0] = i
 
     #Sets the starting pieces to the game without toggling the turn.
-    # if config == 'B', begins with 'B' in top left.
-    # if config == 'W', begins with 'W' in top left
+    # if config == 1, begins with 'B' in top left.
+    # if config == 2, begins with 'W' in top left
     def __startingBoard(self, config):
-        if(config == 'W'):
+        if(config == 1):
             self.matrixB[4,5] = 'B'
             self.matrixB[4,4] = 'W'
             self.matrixB[5,4] = 'B'
             self.matrixB[5,5] = 'W'
-        elif(config == 'B'):
+        elif(config == 2):
             self.matrixB[4,5] = 'W'
             self.matrixB[4,4] = 'B'
             self.matrixB[5,4] = 'W'
@@ -211,8 +149,7 @@ class Board:
     # - checks if the move is Othello-legal
     def __isLegalMove(self,x,y):
         if(self.__checkInput(x,y) and self.__isSpotOpen(x,y)):
-            y = self.__changeY(y)
-            return self.rules.isLegalMove(x,y,self.matrixB,self.turn.getTurn())
+            return self.rules.checkLegalMove(self.matrixB, x, y)
         return False
 
     #Checks to make sure that the x and y input are valid characters for the board.
@@ -238,39 +175,7 @@ if(__name__ == "__main__"):
     b = Board( 'W', 'B', 1, 'B')
     b.printBoard()
     print b.getTurn()
-    b.move(3,'D')
-
-
-    
-    b.move(3,'C')
-    b.printBoard()
-    b.move(4,'C')
-    b.printBoard()
-    print(b.getTurn())
-    b.move(5,'C')
-    b.printBoard()
-    b.move(4,'B')
-    b.move(2,'D')
-    print(b.getTurn())
-    b.printBoard()
-    b.move(2,'C')
-    b.printBoard()
-    b.move(4,'A')
-    b.printBoard()
-    b.move(1,'D')
-    b.printBoard()
-    b.move(2,'B')
-    b.printBoard()
-    b.move(6,'D')
-    b.printBoard()
     b.move(3,'E')
-    b.printBoard()
-    b.move(4,'F')
-    b.printBoard()
-    b.move(2,'E')
-    b.printBoard()
-    b.move(1,'E')
-    b.printBoard()
-    b.move(4,'G')
+
     b.printBoard()
     print b.getTurn()

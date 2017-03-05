@@ -111,12 +111,13 @@ class Board:
     def move(self,x,y):
         #should be a check legal __move__ function here for the x and y coordinate
 
+<<<<<<< HEAD
         if(self.__isLegalMove(x,y)):
+=======
+            self.__prevMatrix = self.matrixB
+>>>>>>> 40d81fb7ebd96053c3bb4d9ba6ffbe89b3758acd
             y = self.__changeY(y)
 
-            self.__prevMatrix = self.matrixB
-            y = self.__changeY(y)
-            print(self.rules.isLegalMove(x,y,self.matrixB,self.turn.getTurn()))
             self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
             oldMatrix = np.copy(self.matrixB)
 
@@ -204,6 +205,7 @@ class Board:
     def __changeY(self,y):
         #need to establish this as an integer otherwise it may cause errors
         return int(chr(ord(y)-16))
+
 
     # checks if a submitted move is legal.
     # - checks valid input characters
