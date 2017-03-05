@@ -12,8 +12,66 @@ class Rules:
         return False
 
 
-    def calcLegalMoves(self):
-        pass
+    def calcLegalMove(self,x,y,matrixB,turn):
+
+        print x,y
+        checkSides = False
+        print(matrixB[x-1,y])
+
+        if turn == 'W':
+            notTurn = 'B'
+        else:
+            notTurn = 'W'
+        for i in range(8):
+
+            if(matrixB[x,y] != '-' and checkSides == False):
+                return False
+            elif(matrixB[x,y] == '-' and checkSides == True):
+                return True
+            #temp, doesn't make the edges work correctly
+            if(matrixB[x-1,y] == notTurn):
+                print "Up 1"
+                y-=1
+                checkSides = True
+            elif(matrixB[x-1,y-1]== notTurn):
+                print "up left 1"
+                x-=1
+                y-=1
+                checkSides = True
+            elif(matrixB[x-1,y] == notTurn):
+                print "left 1"
+                x-=1
+                checkSides = True
+            elif(matrixB[x-1,y+1] == notTurn):
+                print "down left 1"
+                x-=1
+                y+=1
+                checkSides = True
+            elif(matrixB[x,y+1] ==notTurn):
+                print "down 1"
+                y+=1
+                checkSides = True
+            elif(matrixB[x+1,y+1] ==notTurn):
+                print "down right 1"
+                y+=1
+                x+=1
+                checkSides = True
+            elif(matrixB[x+1,y] ==notTurn):
+                print "right 1"
+                x+=1
+                checkSides = True
+            elif(matrixB[x+1,y-1] ==notTurn):
+                print "up right 1"
+                x+=1
+                y-=1
+                checkSides = True
+            else:
+                print "none"
+
+                return checkSides
+
+
+
 
     # checks if a proposed move is valid
     def checkLegalMove(self, matrix, x, y):

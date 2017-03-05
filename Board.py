@@ -73,7 +73,9 @@ class Board:
         if(self.__isLegalMove(x,y)):
 
             y = self.__changeY(y)
+            print(self.rules.calcLegalMove(x,y,self.matrixB,self.turn.getTurn()))
             self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
+
             self.turn.flip()
             wScore,bScore = self.getScore()
             self.scoreboard.updateScore(wScore,bScore)
