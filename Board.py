@@ -108,8 +108,14 @@ class Board:
     #x and y are the coordinate points that correspond to the matrix.
     #The ____move____s alternate so it's easy to have two people, or one and an A.I. play
     def move(self,x,y):
-        #should be a check legal __move__ function here for the x and y coordinate
-        print(self.rules.getCanMove(self.matrixB,self.turn.getTurn()))
+
+        #in the situation where the player cannot move
+        if(self.rules.getCanMove(self.matrixB,self.turn.getTurn())==False):
+            print "Player",self.turn.getTurn(),"has no moves to make."
+            self.turn.flip()
+            return True
+
+        #where the player can moved
         if(self.__isLegalMove(x,y)):
             y = self.__changeY(y)
             oldMatrix = np.copy(self.matrixB)
@@ -139,7 +145,6 @@ class Board:
                     whiteScore += 1
                 elif(self.matrixB[i,j] == 'B'):
                     blackScore += 1
-        print "White",whiteScore
 
         return whiteScore,blackScore
 
@@ -151,7 +156,15 @@ class Board:
     # returns true if the game is over. Either the board is full or
     # neither player or AI can make a move.
     def isGameOver(self):
-        return self.rules.isGameOver(self.matrixB)
+        if(self.turn.getTurn() =='W'):
+            opp = 'B'
+        else:
+            opp = 'W'
+        if(self.rules.isGameOver(self.matrixB) == True
+         and (self.rules.getCanMove(self.matrixB,self.turn.getTurn()) == False
+         and self.rules.getCanMove(self.matrixB,opp) == False)):
+            return True
+        return False
 
     ############################
             #PRIVATE
@@ -213,7 +226,7 @@ class Board:
     #Checks to make sure that the x and y input are valid characters for the board.
     #Currently not in use but I thought it would be valuable to have.
     def __checkInput(self,x,y):
-        if(x <= 1 or x >= 8):
+        if(x < 1 or x > 8):
             print "Bad x value input; keep in the range of 1-8."
             return False
         if(y >= 'A' and y <= 'H' or y>='a' and y <= 'h'):
@@ -294,5 +307,19 @@ if(__name__ == "__main__"):
     b.move(8,'A')
     b.move(7,'D')
     b.move(7,'H')
+    b.move(1,'G')
+    b.move(1,'H')
+    b.move(8,'H')
+    b.move(8,'H')
+    b.move(5,'H')
+    b.move(4,'H')
+    b.move(5,'F')
+    b.move(8,'F')
+    b.move(3,'H')
+    b.move(8,'B')
+    b.move(8,'G')
+    b.move(8,'D')
+    b.move(7,'A')
+    b.move(7,'A')
 
     print b.getTurn()

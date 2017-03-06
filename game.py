@@ -9,7 +9,7 @@ TODO max
 '''
 
 class Game:
-
+    #needs to have a few more beginning options for the game.
     # initialize board conditions to game specifications.
     def __init__(self):
         self.__turn = Turn('B')
@@ -23,6 +23,9 @@ class Game:
     # plays a standard game of Othello with an option to adjust the length
     # of a turn. Param: turnTime, seconds as an int.
     def playGame(self, turnTime):
+        #NOte*************
+        #We need to make this able to take in a revert move
+        #need to be able to quit mid game also.
         self.__AIturnTime = turnTime
 
         while(not self.board.isGameOver()):
@@ -86,6 +89,9 @@ class Game:
             try:
                 x = int(raw_input("Enter X number: "))
                 y = str(raw_input("Enter Y character: "))
+                if(y == 'R' or  y =='r'):
+                    print "error here"
+                    self.board.revertBoard()
                 hasMoved = self.board.move(x,y)
 
             except:

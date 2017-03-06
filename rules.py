@@ -104,7 +104,9 @@ class Rules:
         #checks to see if the line needs to be changed.
         tmp,score = self.__lineCheck(x,y,matrixB,turn,move)
         score+=oldscore
+
         if(tmp):
+
             if(matrixB[x,y] == opp):
                 #flips the actual value of the chip on the board.
                 matrixB = self.__flipChip(x,y,matrixB)
@@ -112,6 +114,7 @@ class Rules:
             elif(matrixB[x,y] == turn):
                 #returns the matrix once it is finished being altered
                 return matrixB,score
+                
             else:
                 return matrixB,score
         #if no change needs to be done then send the matrix back
