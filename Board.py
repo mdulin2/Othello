@@ -58,7 +58,8 @@ class Board:
 
     # Constructor for the Board. Turn defaults to Black.
     # player and AI are either 'W' or 'B'.
-    # config is either 1 or 2. 1 if 'W' starts top left, 2 if flipped.
+    # config : 'W' is for 'W' in top left start. 'B' is for
+    # 'B' starting in the top left.
     def __init__(self, player, AI, config, turn='B'):
         # initialize scoreboard with correct player names
         self.scoreboard = ScoreBoard(player, AI)
@@ -72,7 +73,7 @@ class Board:
 
         #***NOte::: I changed this so i could test my code
         #should be set to config in the constructor
-        self.__gameSetUp(config = 'A')
+        self.__gameSetUp(config)
 
     #red represents the move made.
     #highlights the changes that were made in the previous move
@@ -122,8 +123,10 @@ class Board:
 
             #flips the turns
             self.turn.flip()
+            return True
         else:
-            raise Exception("Move Error")
+            print "Please enter a valid spot to move to."
+            return False
 
     # returns the score as two integer returns: white score followed by black.
     def getScore(self):
@@ -145,10 +148,10 @@ class Board:
     def revertBoard(self):
         self.matrixB = self.__prevMatrix.copy()
 
-    # returns true if the board is full (signifies game is over)
-    def isFull(self):
-        whites, blacks = self.getScore()
-        return((whites + blacks) == 64)
+    # returns true if the game is over. Either the board is full or
+    # neither player or AI can make a move.
+    def isGameOver(self):
+        return self.rules.isGameOver(self.matrixB)
 
     ############################
             #PRIVATE
@@ -210,7 +213,7 @@ class Board:
     #Checks to make sure that the x and y input are valid characters for the board.
     #Currently not in use but I thought it would be valuable to have.
     def __checkInput(self,x,y):
-        if(int(x) < 1 or int(x) > 8):
+        if(x <= 1 or x >= 8):
             print "Bad x value input; keep in the range of 1-8."
             return False
         if(y >= 'A' and y <= 'H' or y>='a' and y <= 'h'):
@@ -234,7 +237,7 @@ class Board:
         return count-1
 # if Board.py is top-level module, run main. (used only for testing)
 if(__name__ == "__main__"):
-    b = Board( 'W', 'B', 1, 'B')
+    b = Board( 'W', 'B', 'W', 'B')
 
     print b.getTurn()
     b.move(3,'D')
