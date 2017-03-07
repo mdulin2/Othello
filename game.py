@@ -1,8 +1,10 @@
 import numpy as np
 from Board import Board
 from Board import Turn
+from othelloAI import OthelloAI
 import threading
 import time
+import sys
 
 '''
 TODO max
@@ -14,10 +16,13 @@ class Game:
     def __init__(self):
         self.__turn = Turn('B')
         self.__AIplayed = False
+        self.__isAIturn = False
+        self.__stopTimer = False
         self.__AIturnTime = 10      # in seconds
         self.__player = ''
-        self.__AI = ''
+        self.__AItoken = ''
         self.board = self.__getInit()
+        self.__AI = OthelloAI(self.__AItoken)
 
 
     # plays a standard game of Othello with an option to adjust the length
@@ -28,6 +33,10 @@ class Game:
         #need to be able to quit mid game also.
         self.__AIturnTime = turnTime
 
+        # create thread for the AI timer
+        self.timeThread = threading.Thread(target=self.__timer, args=())
+        self.timeThread.start()
+
         while(not self.board.isGameOver()):
 
             if(self.__player == self.__turn.getTurn()):
@@ -37,9 +46,12 @@ class Game:
                 print("AI's turn to move.")
                 self.__playAIturn()
 
+            self.__confirmMove()
             self.__turn.flip()
-            #***The print is happening in move with the parameters being correct
+            #***The print is in move with the parameters being correct
             #self.board.highLightPrint()
+        # join threads and finish the game
+        self.__endGame()
 
 
     ############################
@@ -51,7 +63,7 @@ class Game:
         board.printBoard()
         self.__setPlayers()
         if(self.__player == 'B'):
-            board = Board(self.__player, self.__AI, 'W', 'B')
+            board = Board(self.__player, self.__AItoken, 'W', 'B')
         return board
 
 
@@ -65,11 +77,11 @@ class Game:
             self.__player = player
             if(player == 'W' or player == 'w'):
                 print("Player set to be: 'W'")
-                self.__AI = 'B'
+                self.__AItoken = 'B'
                 print("AI set to be: 'B'")
             elif(player == 'B' or player == 'b'):
                 print("Player set to be: 'B'")
-                self.__AI = 'W'
+                self.__AItoken = 'W'
                 print("AI set to be: 'W'")
 
 
@@ -89,14 +101,10 @@ class Game:
             try:
                 x = int(raw_input("Enter X number: "))
                 y = str(raw_input("Enter Y character: "))
-                if(y == 'R' or  y =='r'):
-                    print "error here"
-                    self.board.revertBoard()
                 hasMoved = self.board.move(x,y)
 
             except:
                 print "Bad inputs; please give a number and letter where it is asked"
-
 
 
     # logic for calling the AI to make a move. Temporarily is done
@@ -122,24 +130,50 @@ class Game:
         AIThread.join()
         '''
 
+    # asks the user for move confirmation. In the event of a dispute,
+    # the board gets set to the previous state, and the current turn gets
+    # replayed.
+    def __confirmMove(self):
+        choice = raw_input("Confirm Move.\n'q' to quit, 'r' to revert board: ")
+        if(choice == 'q'):
+            self.__endGame()
+        elif(choice == 'r'):
+            print "Board set to prior state."
+            self.board.revertBoard()
+            self.board.printBoard()
+            self.__turn.flip()
+
 
     # counts down from 10, waiting for __AIplayed to be true.
     # if __AIplayed never evaluates to true, prints to terminal (currently).
     def __timer(self):
-        print "AI timer:"
-        for i in range(self.__AIturnTime, 0, -1):
-            print i
-            time.sleep(1)
-            if(self.__AIplayed == True):
-                return True
-        print "AI did not play in time. "
+        while(not self.__stopTimer):
+            if(self.__isAIturn):
+                self.__isAIturn = False
+                print "AI timer:"
+                for i in range(self.__AIturnTime, 0, -1):
+                    print i
+                    time.sleep(1)
+                    if(self.__AIplayed == True):
+                        return True
+                print "AI did not play in time. "
 
 
     # temporary bot for an AI
     def __runAI(self):
         time.sleep(3)
+
+        # will need system for giving AI the board matrix and rule functions
+        self.AI.makeMove()
+
         self.__AIplayed = True
 
+
+    # finish game and join all threads
+    def __endGame(self):
+        self.__stopTimer = True
+        self.timeThread.join()
+        sys.exit()
 
 # runs the base game of Othello
 if(__name__ == "__main__"):

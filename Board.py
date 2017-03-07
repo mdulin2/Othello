@@ -1,17 +1,11 @@
-
-
 import numpy as np
 from rules import Rules
 
 
-#Highlights the font when printed for the chips flipped
-class yellowColor:
-    WARNING = '\033[93m'
-    END = '\033[0m'
 
-#The move that was made by the player
-class redColor:
-    FAIL = '\033[91m'
+class Color:
+    YELLOW = '\033[93m'    # Highlights chips flipped
+    RED = '\033[91m'       # The move that was made by the player
     END = '\033[0m'
 
 # turn can flip between 'W' and 'B'
@@ -67,12 +61,11 @@ class Board:
         self.rules = Rules()
         #making the board matrix
         self.matrixB = np.chararray((9,9))
+        # init previous matrix
+        self.__prevMatrix = np.copy(self.matrixB)
         #whose turn it is; 'B' for black and 'W' for white.
         self.turn = Turn(turn)
         # set up the game and initial Board
-
-        #***NOte::: I changed this so i could test my code
-        #should be set to config in the constructor
         self.__gameSetUp(config)
 
     #red represents the move made.
@@ -81,15 +74,17 @@ class Board:
         for i in range(0,9):
             for j in range(0,9):
                 if(i ==x and j == y):
-                    print(redColor.FAIL + "'" + self.matrixB[i,j] + "'" + redColor.END),
+                    print(Color.RED + "'" + self.matrixB[i,j] + "'" + Color.END),
                 elif(self.matrixB[i,j] != oldMatrix[i,j]):
-                    print(yellowColor.WARNING + "'" +self.matrixB[i,j]+ "'" + yellowColor.END ),
+                    print(Color.YELLOW + "'" +self.matrixB[i,j]+ "'" + Color.END ),
 
                 else:
                     print "'"+self.matrixB[i,j]+ "'",
             print
         print
         self.scoreboard.displayScore()
+
+
     #this print function will display the contents of the board, matrixB
     def printBoard(self):
         for i in range(0,9):
@@ -99,10 +94,10 @@ class Board:
         print
         self.scoreboard.displayScore()
 
+
     #returns the value of turn, either B for black or W for white.
     def getTurn(self):
         return self.turn.getTurn()
-
 
 
     #x and y are the coordinate points that correspond to the matrix.
@@ -119,6 +114,7 @@ class Board:
         if(self.__isLegalMove(x,y)):
             y = self.__changeY(y)
             oldMatrix = np.copy(self.matrixB)
+            self.__prevMatrix = np.copy(self.matrixB)
             self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
 
             #scorring the game
@@ -134,6 +130,7 @@ class Board:
             print "Please enter a valid spot to move to."
             return False
 
+
     # returns the score as two integer returns: white score followed by black.
     def getScore(self):
         whiteScore = 0
@@ -148,10 +145,16 @@ class Board:
 
         return whiteScore,blackScore
 
+
     # reverts the current board positions to the previous state.
-    # this is called in the event of a dispute.
+    # this is called in the event of a dispute. Resets the
+    # scoreboard and proper turn.
     def revertBoard(self):
-        self.matrixB = self.__prevMatrix.copy()
+        self.matrixB = np.copy(self.__prevMatrix)
+        wScore,bScore = self.getScore()
+        self.scoreboard.updateScore(wScore,bScore)
+        self.turn.flip()
+
 
     # returns true if the game is over. Either the board is full or
     # neither player or AI can make a move.
