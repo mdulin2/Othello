@@ -146,6 +146,8 @@ class Board:
         return whiteScore,blackScore
 
 
+
+
     # reverts the current board positions to the previous state.
     # this is called in the event of a dispute. Resets the
     # scoreboard and proper turn.

@@ -5,6 +5,7 @@ from othelloAI import OthelloAI
 import threading
 import time
 import sys
+import copy
 
 '''
 TODO max
@@ -44,7 +45,7 @@ class Game:
                 self.__playerTurn()
             else:
                 print("AI's turn to move.")
-                self.__playAIturn()
+                self.__runAI()
 
             self.__confirmMove()
             self.__turn.flip()
@@ -119,16 +120,7 @@ class Game:
                 hasMoved = self.board.move(x,y)
             except:
                 print "Bad inputs; please give a number and a letter where asked"
-        '''
-        timeThread = threading.Thread(target=self.__timer, args=())
-        AIThread = threading.Thread(target=self.__runAI, args=())
 
-        timeThread.start()
-        AIThread.start()
-
-        timeThread.join()
-        AIThread.join()
-        '''
 
     # asks the user for move confirmation. In the event of a dispute,
     # the board gets set to the previous state, and the current turn gets
@@ -159,14 +151,14 @@ class Game:
                 print "AI did not play in time. "
 
 
-    # temporary bot for an AI
+    # bot for making AI moves
     def __runAI(self):
+        self.__AIplayed == False    # starts timer
         time.sleep(3)
 
-        # will need system for giving AI the board matrix and rule functions
-        self.AI.makeMove()
-
-        self.__AIplayed = True
+        x,y = self.__AI.makeMove(copy.deepcopy(self.board))
+        self.board.move(x,y)
+        self.__AIplayed = True      # stops timer
 
 
     # finish game and join all threads
