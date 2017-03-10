@@ -29,9 +29,6 @@ class Game:
     # plays a standard game of Othello with an option to adjust the length
     # of a turn. Param: turnTime, seconds as an int.
     def playGame(self, turnTime):
-        #NOte*************
-        #We need to make this able to take in a revert move
-        #need to be able to quit mid game also.
         self.__AIturnTime = turnTime
 
         # create thread for the AI timer
@@ -154,7 +151,7 @@ class Game:
     # bot for making AI moves
     def __runAI(self):
         self.__AIplayed == False    # starts timer
-        time.sleep(3)
+        #time.sleep(3)
 
         x,y = self.__AI.makeMove(copy.deepcopy(self.board))
         self.board.move(x,y)

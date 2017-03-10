@@ -14,6 +14,7 @@ class OthelloAI:
 
         x,y = self.__simpleMove(matrix)
         y = self.__changeY(y)
+        print x,y
         return x, y
 
 
@@ -28,6 +29,6 @@ class OthelloAI:
         print("no moves available to AI")
 
 
-    # convert Y into its proper board form
+    # convert Y into its proper board form (character)
     def __changeY(self,y):
-        return # correct y here
+        return chr(y + 64)
