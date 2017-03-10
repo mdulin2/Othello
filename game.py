@@ -111,7 +111,8 @@ class Game:
     # logic for calling the AI to make a move. Temporarily is done
     # through user input.
     def __playAIturn(self):
-        self.__AIplayed == False
+        #changed this from == to =
+        self.__AIplayed = False
         hasMoved = False
         while not hasMoved:
             try:
