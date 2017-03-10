@@ -89,7 +89,7 @@ class Board:
     def printBoard(self):
         for i in range(0,9):
             for j in range(0,9):
-                print "'"+self.matrixB[j,i]+ "'",
+                print "'"+self.matrixB[i,j]+ "'",
             print
         print
         self.scoreboard.displayScore()
