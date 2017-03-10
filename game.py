@@ -105,21 +105,6 @@ class Game:
                 print "Bad inputs; please give a number and letter where it is asked"
 
 
-    # logic for calling the AI to make a move. Temporarily is done
-    # through user input.
-    def __playAIturn(self):
-        #changed this from == to =
-        self.__AIplayed = False
-        hasMoved = False
-        while not hasMoved:
-            try:
-                x = int(raw_input("Enter X number: "))
-                y = str(raw_input("Enter Y character: "))
-                hasMoved = self.board.move(x,y)
-            except:
-                print "Bad inputs; please give a number and a letter where asked"
-
-
     # asks the user for move confirmation. In the event of a dispute,
     # the board gets set to the previous state, and the current turn gets
     # replayed.
@@ -144,19 +129,23 @@ class Game:
                 for i in range(self.__AIturnTime, 0, -1):
                     print i
                     time.sleep(1)
+                    if(i == 1):
+                        print "AI did not play in time. "
                     if(self.__AIplayed == True):
-                        return True
-                print "AI did not play in time. "
+                        break
 
 
     # bot for making AI moves
     def __runAI(self):
-        self.__AIplayed == False    # starts timer
-        #time.sleep(3)
+        self.__AIplayed = False    # starts timer
+        self.__isAIturn = True
+        time.sleep(3)
 
         x,y = self.__AI.makeMove(copy.deepcopy(self.board))
-        self.board.move(x,y)
         self.__AIplayed = True      # stops timer
+        print("AI move: " + str(x) + " " + y)
+        self.board.move(x,y)
+        self.__isAIturn = False
 
 
     # finish game and join all threads

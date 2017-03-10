@@ -14,7 +14,6 @@ class OthelloAI:
 
         x,y = self.__simpleMove(matrix)
         y = self.__changeY(y)
-        print x,y
         return x, y
 
 
