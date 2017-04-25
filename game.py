@@ -6,6 +6,7 @@ import threading
 import time
 import sys
 import copy
+from random import randint
 
 '''
 TODO max
@@ -24,6 +25,7 @@ class Game:
         self.__AItoken = ''
         self.board = self.__getInit()
         self.__AI = OthelloAI(self.__AItoken)
+        self.turnCount = 0
 
 
     # plays a standard game of Othello with an option to adjust the length
@@ -97,8 +99,12 @@ class Game:
         hasMoved = False
         while not hasMoved:
             try:
-                x = int(raw_input("Enter X number: "))
-                y = str(raw_input("Enter Y character: "))
+                x = int(raw_input("Enter number: "))
+                y = str(raw_input("Enter character: "))
+
+                if(x > 8):
+                    x = 999 # code for no moves
+
                 hasMoved = self.board.move(x,y)
 
             except:
@@ -139,11 +145,14 @@ class Game:
     def __runAI(self):
         self.__AIplayed = False    # starts timer
         self.__isAIturn = True
-        time.sleep(3)
 
         x,y = self.__AI.makeMove(copy.deepcopy(self.board))
+        if(x != 999):
+            print("AI move: " + str(x) + " " + y)
+        else:
+            print("no moves available to AI")
+
         self.__AIplayed = True      # stops timer
-        print("AI move: " + str(x) + " " + y)
         self.board.move(x,y)
         self.__isAIturn = False
 

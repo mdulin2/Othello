@@ -103,7 +103,11 @@ class Board:
     #x and y are the coordinate points that correspond to the matrix.
     #The ____move____s alternate so it's easy to have two people, or one and an A.I. play
     def move(self,x,y):
-
+        # if x is 999, no move was made
+        if(x == 999):
+            self.turn.flip()
+            return True
+            
         #in the situation where the player cannot move
         if(self.rules.getCanMove(self.matrixB,self.turn.getTurn())==False):
             print "Player",self.turn.getTurn(),"has no moves to make."

@@ -1,4 +1,5 @@
 from rules import Rules
+import time
 
 class OthelloAI:
 
@@ -20,12 +21,13 @@ class OthelloAI:
     # loops through the matrix and picks the first move that is available.
     # returns x and y coordinates of move to make.
     def __simpleMove(self, matrix):
+        time.sleep(3)
         for i in range(1,9):
             for j in range(1,9):
                 if(self.rules.isLegalMove(i, j, matrix, self.__myToken)):
                     return i,j
-        # not sure how we will handle no moves available yet
-        print("no moves available to AI")
+
+        return 999,5 # no moves available
 
 
     # convert Y into its proper board form (character)
