@@ -24,7 +24,7 @@ class Game:
         self.__player = ''
         self.__AItoken = ''
         self.board = self.__getInit()
-        self.__AI = OthelloAI(self.__AItoken)
+        self.__AI = OthelloAI(self.__AItoken, self.__player)
         self.turnCount = 0
 
 
@@ -162,6 +162,7 @@ class Game:
         self.__stopTimer = True
         self.timeThread.join()
         sys.exit()
+
 
 # runs the base game of Othello
 if(__name__ == "__main__"):
