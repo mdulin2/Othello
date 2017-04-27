@@ -1,40 +1,88 @@
 import copy
+'''
+Filename:   Heuristic.py
+Authors:    Jacob Krantz, Max Dulin
+Date:       4/26/17
+Description:
+    calculates the value of a board state for a player of Othello.
+    Initialized with the token to be analyzed for and called by
+    function 'calculateValue'.
+Heuristic factors:
+- evaporation
+- chip ratio
+- mobility
+- position
+'''
 
 class Heuristic:
 
+    # initializes necessary data structures
     def __init__(self, myToken):
         self.__myToken   = myToken
-        self.__edgeSet   = []
-        self.__cornerSet = []
-        self.__badSet    = []
-        self.__buildSets()
+        self.__positionScores   = [ [ 30,-25,10,5,5,10,-25, 30],
+                                    [-25,-25, 1,1,1, 1,-25,-25],
+                                    [ 10,  1, 5,2,2, 5,  1, 10],
+                                    [  5,  1, 2,1,1, 2,  1,  5],
+                                    [  5,  1, 2,1,1, 2,  1,  5],
+                                    [ 10,  1, 5,2,2, 5,  1,  5],
+                                    [-25,-25, 1,1,1, 1,-25,-25],
+                                    [ 30,-25,10,5,5,10,-25, 30] ]
 
 
-    # calculates the value of a given board state
+    # calculates the value of a given board state.
+    # higher score return, the better the position.
+    # factors of success:
+    # - evaporation
+    # - chip ratio
+    # - mobility
+    # - position
+    # **option: add a multiplier in front of each to adjust their
+    #       individual affect on the score. All are currently
+    #       normalized to 0 < score < 1
     def calculateValue(self, matrix):
-        mobility = self.__getMobilityFactor(copy.deepcopy(matrix))
-        position = self.__getPositionFactor(copy.deepcopy(matrix))
+        movesPlayed = self.__getMovesPlayed(copy.deepcopy(matrix))
+        score = 1
 
-        return mobility * position
+        if(movesPlayed < 20):
+            score = self.__evaporation(matrix)
+        else:
+            if(movesPlayed > 55):
+                score = self.__getChipRatio(movesPlayed, copy.deepcopy(matrix))
+
+            score *= self.__getMobilityFactor(copy.deepcopy(matrix))
+            score *= self.__getPositionFactor(copy.deepcopy(matrix))
+
+        return score
 
 
     #---------------------
     #  PRIVATE FUNCITONS
     #---------------------
 
-    # initializes the position sets for good and bad places
-    def __buildSets(self):
-        self.__cornerSet = [(1,1), (1,8), (8,1), (8,8)]
+    # counts all played turns on the board by looking for occupied spaces.
+    def __getMovesPlayed(self, matrix):
+        movesPlayed = 0
+        for i in range(1,9):
+            for j in range(1,9):
+                if( matrix[i,j] != '-'):
+                    movesPlayed += 1
+        return movesPlayed
 
-        self.__edgeSet   = [(1,3),(1,4),(1,5),(1,6), # standard edges
-                            (3,1),(4,1),(5,1),(6,1),
-                            (8,3),(8,4),(8,5),(8,6),
-                            (3,8),(4,8),(5,8),(6,8)]
 
-        self.__badSet    = [(1,2),(2,1),(2,2),       # surround the corner
-                            (1,7),(2,7),(2,8),
-                            (7,1),(7,2),(8,2),
-                            (7,7),(7,8),(8,7)]
+    # returns the ratio of chips on the board that are myToken.
+    def __getChipRatio(self, movesPlayed, matrix):
+        myCount = 0
+        for i in range(0,9):
+            for j in range(1,9):
+                if(matrix[i,j] == self.__myToken):
+                    myCount += 1
+        return myCount / float(movesPlayed)
+
+
+    # inverse of chip ratio: at beginning of game, give away
+    # more spaces to improve end game chances
+    def __evaporation(self, matrix):
+        return 1 / float(self.__getChipRatio(matrix))
 
 
     # mobility factor is the number of moves normalized to
@@ -51,19 +99,17 @@ class Heuristic:
     # position factor judges the position the AI is in. Analyzes
     # corners, edges. How to judge against bad spaces?
     def __getPositionFactor(self, matrix):
-        cornerScore = self.__getCornerScore(copy.deepcopy(matrix))
-        edgeScore   = self.__getEdgeScore(copy.deepcopy(matrix))
-        badScore    = self.__getBadScore(copy.deepcopy(matrix))
+        totalScore = 0
+        for i in range(1,9):
+            for j in range(1,9):
+                if(matrix[i,j] == self.__myToken):
+                    totalScore += self.__positionScores[i-1, j-1]
 
-        return cornerScore + edgeScore - badScore
+        # normalize the score. Seem reasonable?
+        if(totalScore < 0):
+            totalScore = (totalScore / 450) + 1
+        if(totalScore == 0):
+            totalScore = 1
+        normalized = totalScore / 296
 
-
-
-    def __getCornerScore(self, matrix):
-        pass
-
-    def __getEdgeScore(self, matrix):
-        pass
-        
-    def __getBadScore(self, matrix):
-        pass
+        return normalized

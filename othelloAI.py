@@ -1,4 +1,5 @@
 from rules import Rules
+from Heuristic import Heuristic
 import time
 import copy
 
@@ -6,12 +7,14 @@ class OthelloAI:
 
     # initialize the AI to its proper token
     def __init__(self, AItoken, oppToken):
+        self.heuristic = Heuristic(AItoken)
         self.rules = Rules()
+
         self.__myToken = AItoken
         self.__oppToken = oppToken
-        self.__data = {}            # holds [x,y,token]
+        self.__data = {}            # holds [x, y, token at XY]
         self.__graph = {}           # holds children in a list
-        self.__maxDepth = 5         # depth of search space used
+        self.__maxDepth = 5         # depth of search space used (must be odd)
         self.__nodePtr = 0          # 0 is root, used for naming nodes
 
 
@@ -28,8 +31,8 @@ class OthelloAI:
         self.__graph[0] = []
         self.__data[0] = [] # not sure what this should be yet
         self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix))
-        # print "AI Graph: ", self.__graph
-        # print "AI Data:  ", self.__data
+        print "AI Graph: ", self.__graph
+        print "AI Data:  ", self.__data
         x,y = self.__getBestMove(matrix)
         return x,y
 
@@ -56,7 +59,7 @@ class OthelloAI:
                     self.__nodePtr += 1
                     self.__graph[self.__nodePtr] = []
                     self.__graph[parNode].append(self.__nodePtr)
-                    self.__data[self.__nodePtr] = (i,j)
+                    self.__data[self.__nodePtr] = (i,j, curToken)
                     nextMatrix = self.rules.insertMove(curToken, copy.deepcopy(matrix), i, j)
                     self.__deepMoveBuilder(self.__nodePtr,curDepth+1,nextMatrix)
 
