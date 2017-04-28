@@ -64,7 +64,7 @@ class Heuristic:
         movesPlayed = 0
         for i in range(1,9):
             for j in range(1,9):
-                if( matrix[i,j] != '-'):
+                if(matrix[i,j] != '-'):
                     movesPlayed += 1
         return movesPlayed
 
