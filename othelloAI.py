@@ -16,7 +16,7 @@ class OthelloAI:
         self.__oppToken = oppToken
         self.__graph = {}           # holds children in a list
         self.__data = {}            #[value,isMax,parent,alpha,beta,x,y,token]
-        self.__maxDepth = 2 # depth of search space used (must be odd)
+        self.__maxDepth = 3 # depth of search space used (must be odd)
         self.__nodePtr = 0          # 0 is root, used for naming nodes
 
 
@@ -28,34 +28,27 @@ class OthelloAI:
 
 
     def resetValues(self):
-        #self.heuristic = Heuristic(AItoken)
         self.abPrune = ABPrune()
-        #self.__myToken = AItoken
-        #self.__oppToken = oppToken
         self.__graph = {}           # holds children in a list
         self.__data = {}            #[value,isMax,parent,alpha,beta,x,y,token]
         self.__maxDepth = 3 # depth of search space used (must be odd)
         self.__nodePtr = 0          # 0 is root, used for naming nodes
+        self.__graph[0] = []
+        self.__data[0] = [-999999,True,"none",-999999,999999,0,0,self.__myToken] # not sure what this should be yet
 
 
     # performs a move using minimax and alpha beta pruning
     def __deepMove(self, matrix):
         self.resetValues()
-        self.__nodePtr = 0
-        self.__graph[0] = []
-        self.__data[0] = [-999999,True,"none",-999999,999999,0,0,self.__myToken] # not sure what this should be yet
         self.__data = self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix))
         print "AI Graph: ", self.__graph
         #print "AI data:  ", self.__data
         #print "AI data: ",self.__data
         for key in self.__data:
             print key,self.__data[key][0],self.__data[key][5],self.__data[key][6]
-        self.abPrune.initGraph(self.__graph,self.__data)
-        print self.abPrune.minimax(0)
-        x,y = self.abPrune.getBestPlace()
+        x,y = self.__getBestMove()
 
         print x,y
-        #x,y = self.__getBestMove(matrix)
         return x,y
 
 
@@ -88,6 +81,8 @@ class OthelloAI:
                     self.__deepMoveBuilder(self.__nodePtr,curDepth+1,nextMatrix)
 
         return self.__data
+
+        
     #gets the parent of a nodes
     #this could be more efficient i just don't know how to do this
     def __getParent(self,curDepth):
@@ -123,13 +118,12 @@ class OthelloAI:
         return [value,token,parent,sA,sB,i,j,curToken]
 
 
-
-
-
-
-    # not built yet, just calls simple for now
-    def __getBestMove(self, matrix):
-        return self.__simpleMove(matrix)
+    # returns the x and y of the best move as
+    # searched by abPrune
+    def __getBestMove(self):
+        self.abPrune.initGraph(self.__graph,self.__data)
+        print self.abPrune.minimax(0)
+        return self.abPrune.getBestPlace()
 
 
     # loops through the matrix and picks the first move that is available.
