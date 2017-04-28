@@ -1,4 +1,5 @@
 import copy
+from rules import Rules
 '''
 Filename:   Heuristic.py
 Authors:    Jacob Krantz, Max Dulin
@@ -18,15 +19,16 @@ class Heuristic:
 
     # initializes necessary data structures
     def __init__(self, myToken):
+        self.rules = Rules()
         self.__myToken   = myToken
-        self.__positionScores   = [ [ 30,-25,10,5,5,10,-25, 30],
+        self.__positionScores   = [ [ 30,-25,12,5,5,12,-25, 30],
                                     [-25,-25, 1,1,1, 1,-25,-25],
-                                    [ 10,  1, 5,2,2, 5,  1, 10],
+                                    [ 12,  1, 10,2,2, 10,  1, 12],
                                     [  5,  1, 2,1,1, 2,  1,  5],
                                     [  5,  1, 2,1,1, 2,  1,  5],
-                                    [ 10,  1, 5,2,2, 5,  1,  5],
+                                    [ 12,  1, 10,2,2, 10,  1,12],
                                     [-25,-25, 1,1,1, 1,-25,-25],
-                                    [ 30,-25,10,5,5,10,-25, 30] ]
+                                    [ 30,-25,12,5,5,12,-25, 30] ]
 
 
     # calculates the value of a given board state.
@@ -43,11 +45,12 @@ class Heuristic:
         movesPlayed = self.__getMovesPlayed(copy.deepcopy(matrix))
         score = 1
 
-        if(movesPlayed < 20):
-            score = self.__evaporation(matrix)
+        if(movesPlayed < 10):
+            score = self.__getChipRatio(movesPlayed, copy.deepcopy(matrix))
+            #score = self.__evaporation(movesPlayed,matrix)
         else:
             if(movesPlayed > 55):
-                score = self.__getChipRatio(movesPlayed, copy.deepcopy(matrix))
+                #score = self.__getChipRatio(movesPlayed, copy.deepcopy(matrix))
 
             score *= self.__getMobilityFactor(copy.deepcopy(matrix))
             score *= self.__getPositionFactor(copy.deepcopy(matrix))
@@ -81,8 +84,8 @@ class Heuristic:
 
     # inverse of chip ratio: at beginning of game, give away
     # more spaces to improve end game chances
-    def __evaporation(self, matrix):
-        return 1 / float(self.__getChipRatio(matrix))
+    def __evaporation(self,movesPlayed,matrix):
+        return 1 / float(self.__getChipRatio(movesPlayed,matrix))
 
 
     # mobility factor is the number of moves normalized to
@@ -103,7 +106,8 @@ class Heuristic:
         for i in range(1,9):
             for j in range(1,9):
                 if(matrix[i,j] == self.__myToken):
-                    totalScore += self.__positionScores[i-1, j-1]
+                    #totalScore+= self.__positionScores[]
+                    totalScore += self.__positionScores[i-1][j-1]
 
         # normalize the score. Seem reasonable?
         if(totalScore < 0):

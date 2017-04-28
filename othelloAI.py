@@ -44,8 +44,6 @@ class OthelloAI:
         print "AI Graph: ", self.__graph
         #print "AI data:  ", self.__data
         #print "AI data: ",self.__data
-        for key in self.__data:
-            print key,self.__data[key][0],self.__data[key][5],self.__data[key][6]
         x,y = self.__getBestMove()
 
         print x,y
@@ -75,14 +73,14 @@ class OthelloAI:
                     self.__graph[self.__nodePtr] = []
                     self.__graph[parNode].append(self.__nodePtr)
                     #self.__data[self.__nodePtr] = (i,j, curToken)
-                    self.__data[self.__nodePtr] = self.__getDataValues(curToken,curDepth,i,j)
+                    self.__data[self.__nodePtr] = self.__getDataValues(curToken,curDepth,i,j,copy.deepcopy(matrix))
                     nextMatrix = self.rules.insertMove(curToken, copy.deepcopy(matrix), i, j)
                     #need to calculate
                     self.__deepMoveBuilder(self.__nodePtr,curDepth+1,nextMatrix)
 
         return self.__data
 
-        
+
     #gets the parent of a nodes
     #this could be more efficient i just don't know how to do this
     def __getParent(self,curDepth):
@@ -95,7 +93,7 @@ class OthelloAI:
 
 
     #sets the data values to make the alpha beta prunning possible
-    def __getDataValues(self,curToken,curDepth,i,j):
+    def __getDataValues(self,curToken,curDepth,i,j,matrix):
         sA = -999999
         sB = 999999
 
@@ -110,7 +108,7 @@ class OthelloAI:
         #if at the max depth of the tree
         if(curDepth == self.__maxDepth):
             #value = heuristicValue
-            value = rand.random() * 100
+            value = self.heuristic.calculateValue(matrix)
             #value = 0
         parent = self.__getParent(curDepth)
         #need to find the parent right here
