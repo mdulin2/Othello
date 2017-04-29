@@ -107,7 +107,7 @@ class Board:
         if(x == 999):
             self.turn.flip()
             return True
-            
+
         #in the situation where the player cannot move
         if(self.rules.getCanMove(self.matrixB,self.turn.getTurn())==False):
             print "Player",self.turn.getTurn(),"has no moves to make."
@@ -199,6 +199,20 @@ class Board:
     # if config == 2, begins with 'W' in top left
     def __startingBoard(self, config):
         print config
+        if(config == 'W'):
+            self.matrixB[8,8] = 'B'
+            self.matrixB[8,7] = 'B'
+            self.matrixB[7,8] = 'B'
+            self.matrixB[1,5] = 'W'
+
+            self.matrixB[1,8] = 'B'
+            self.matrixB[1,7] = 'B'
+            self.matrixB[2,8] = 'B'
+
+            self.matrixB[8,1] = 'B'
+            self.matrixB[7,1] = 'B'
+            self.matrixB[8,2] = 'B'
+
         if(config == 'W'):
             self.matrixB[4,5] = 'B'
             self.matrixB[4,4] = 'W'
