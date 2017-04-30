@@ -31,7 +31,6 @@ class OthelloAI:
         self.abPrune = ABPrune()
         self.__graph = {}           # holds children in a list
         self.__data = {}            #[value,isMax,parent,alpha,beta,x,y,token]
-        self.__maxDepth = 3 # depth of search space used (must be odd)
         self.__nodePtr = 0          # 0 is root, used for naming nodes
         self.__graph[0] = []
         self.__data[0] = [-999999,True,"none",-999999,999999,0,0,self.__myToken] # not sure what this should be yet
@@ -39,6 +38,7 @@ class OthelloAI:
 
     # performs a move using minimax and alpha beta pruning
     def __deepMove(self, matrix):
+        #self.__getDepth(matrix) #my computer is too slow to run this. You can mess around with this though
         self.resetValues()
         self.__data = self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix))
         #print "AI Graph: ", self.__graph
@@ -47,6 +47,18 @@ class OthelloAI:
         x,y = self.__getBestMove()
 
         return x,y
+
+    #How deep the tree should branch, based on the amount of moves on the board
+    def __getDepth(self,matrix):
+        moveCount = self.rules.getMoveCount(matrix,self.__myToken)
+        print "Possible Move Count: ",moveCount
+
+        if(moveCount < 8):
+            self.__maxDepth = 5
+        elif(moveCount > 8):
+            self.__maxDepth = 3
+        return
+
 
     # recursively builds the graph to be searched. Limited to a depth
     # specified in self.__maxDepth
@@ -118,7 +130,7 @@ class OthelloAI:
     # searched by abPrune
     def __getBestMove(self):
         self.abPrune.initGraph(self.__graph,self.__data)
-        print self.abPrune.minimax(0)
+        self.abPrune.minimax(0)
         return self.abPrune.getBestPlace()
 
 

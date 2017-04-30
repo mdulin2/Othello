@@ -48,7 +48,15 @@ class Rules:
         matrix2 = self.__makeMove(turn, matrix, x, y)
         return self.__fixBoard(matrix2, x, y,turn)
 
-
+    #The possible amount of moves in a turn
+    def getMoveCount(self,matrix,turn):
+        count = 0
+        for i in range(1,9):
+            for j in range(1,9):
+                if(matrix[i,j] == '-'):
+                    if(self.isLegalMove(i,j,matrix,turn)):
+                        count +=1
+        return count
 
 
     ###########################
@@ -114,7 +122,7 @@ class Rules:
             elif(matrixB[x,y] == turn):
                 #returns the matrix once it is finished being altered
                 return matrixB,score
-                
+
             else:
                 return matrixB,score
         #if no change needs to be done then send the matrix back

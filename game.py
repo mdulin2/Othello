@@ -66,7 +66,6 @@ class Game:
             board = Board(self.__player, self.__AItoken, 'W', 'B')
         return board
 
-
     # asks the user who will be white or black between the player and the AI
     # repeats unitl proper input
     def __setPlayers(self):
