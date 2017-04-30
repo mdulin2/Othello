@@ -43,7 +43,7 @@ class Rules:
 
     # given a previous state matrix and coordinates for insertion,
     # makes a move and flips all necessary chips according to
-    # othello rules
+    # othello rulesF
     def insertMove(self, turn, matrix, x, y):
         matrix2 = self.__makeMove(turn, matrix, x, y)
         return self.__fixBoard(matrix2, x, y,turn)
@@ -57,7 +57,6 @@ class Rules:
                     if(self.isLegalMove(i,j,matrix,turn)):
                         count +=1
         return count
-
 
     ###########################
     # PRIVATE BELOW

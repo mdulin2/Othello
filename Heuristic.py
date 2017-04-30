@@ -53,7 +53,7 @@ class Heuristic:
     #       individual affect on the score. All are currently
     #       normalized to 0 < score < 1
     def calculateValue(self, matrix):
-        movesPlayed = self.__getMovesPlayed(copy.deepcopy(matrix))
+        movesPlayed = self.getMovesPlayed(copy.deepcopy(matrix))
         score = 1
         self.__setPosition(matrix)
         if(movesPlayed < 17):
@@ -64,7 +64,7 @@ class Heuristic:
 
             #score = self.__getChipRatio(movesPlayed, copy.deepcopy(matrix))
             #score = self.__evaporation(movesPlayed,matrix)
-        elif(movesPlayed >= 17 and movesPlayed <54):
+        elif(movesPlayed >= 17 and movesPlayed <58):
             stabVal = self.__getUserStability(copy.deepcopy(matrix))
             mobilityVal = self.__getMobilityFactor(copy.deepcopy(matrix))
             posVal = self.__getPositionFactor(copy.deepcopy(matrix))
@@ -89,7 +89,7 @@ class Heuristic:
 
 
     # counts all played turns on the board by looking for occupied spaces.
-    def __getMovesPlayed(self, matrix):
+    def getMovesPlayed(self, matrix):
         movesPlayed = 0
         for i in range(1,9):
             for j in range(1,9):
@@ -228,15 +228,15 @@ class Heuristic:
                 if(matrix[i,j] == self.__myToken):
                     value = self.__positionScores[i-1][j-1]
                     if(value < 11):
-                        totalScore += -300
+                        totalScore += -400000
                     elif (value > 90):
-                        totalScore += 150  #120
+                        totalScore += 400  #120
                     else:
                         totalScore+=value
-        if(value < 0):
-            normalized = 1 / float(44.6875 * turnCount * 10)
+        if(value <= 0):
+            normalized = 0 #1 / float(44.6875 * turnCount * 100)
         else:
-            turnCount = self.__getMovesPlayed(matrix)
+            turnCount = self.getMovesPlayed(matrix)
             normalized = totalScore / float(44.6875 * turnCount * 4)
             #print totalScore
             #print normalized
@@ -254,7 +254,7 @@ class Heuristic:
     def __getWeightStage2(self,stabVal,mobilityVal,posVal):
         stabVal = stabVal * .45
         mobilityVal = mobilityVal *.31
-        posVal = posVal * .10
+        posVal = posVal * .30
         score = stabVal * mobilityVal * posVal
         return score
     #resets the value on the position table if the corner has been taken by the user
@@ -291,11 +291,3 @@ class Heuristic:
             self.__positionScores[6][1] = 65
             self.__positionScores[5][0] = 65
             self.__positionScores[7][2] = 80
-    #checks for the importance based on the turn
-    def __getPositionImportance(self,turnCount):
-        if(turnCount < 10):
-            return 100
-        elif(turnCount <= 10 and turnCount >= 56):
-            return 1000
-        else:
-            return 5

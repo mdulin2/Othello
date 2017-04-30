@@ -25,7 +25,7 @@ class Game:
         self.__AItoken = ''
         self.board = self.__getInit()
         self.__AI = OthelloAI(self.__AItoken, self.__player)
-        self.turnCount = 0
+        self.turnCount = 4 #60
 
 
     # plays a standard game of Othello with an option to adjust the length

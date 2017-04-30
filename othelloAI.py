@@ -26,6 +26,14 @@ class OthelloAI:
         x,y = self.__deepMove(board.matrixB)
         return x, self.__changeY(y)
 
+    #prints all of the possible move for the turn
+    def printMoves(self,matrix,turn):
+        print ("ALl of the moves: ")
+        for i in range(1,9):
+            for j in range(1,9):
+                if(matrix[i,j] == '-'):
+                    if(self.rules.isLegalMove(i,j,matrix,turn)):
+                        print i,j
 
     def resetValues(self):
         self.abPrune = ABPrune()
@@ -38,25 +46,31 @@ class OthelloAI:
 
     # performs a move using minimax and alpha beta pruning
     def __deepMove(self, matrix):
-        #self.__getDepth(matrix) #my computer is too slow to run this. You can mess around with this though
+        self.printMoves(matrix,self.__myToken)
+        self.__getDepth(matrix) #my computer is too slow to run this. You can mess around with this though
         self.resetValues()
         self.__data = self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix))
-        #print "AI Graph: ", self.__graph
+        print "AI Graph: ", self.__graph
         #print "AI data:  ", self.__data
         #print "AI data: ",self.__data
         x,y = self.__getBestMove()
-
         return x,y
 
     #How deep the tree should branch, based on the amount of moves on the board
     def __getDepth(self,matrix):
         moveCount = self.rules.getMoveCount(matrix,self.__myToken)
-        print "Possible Move Count: ",moveCount
+        print "Moves left in the game:" , moveCount
 
-        if(moveCount < 8):
+        if(moveCount < 4):
             self.__maxDepth = 5
-        elif(moveCount > 8):
+        elif(moveCount > 3):
             self.__maxDepth = 3
+
+        #if the depth goes to deep with no further moves then the game will crash
+        #So, this if statement fixes that issue
+        if(self.__maxDepth >= (moveCount)):
+            self.__maxDepth = moveCount
+
         return
 
 
