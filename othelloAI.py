@@ -56,6 +56,7 @@ class OthelloAI:
         x,y = self.__getBestMove()
         return x,y
 
+
     #How deep the tree should branch, based on the amount of moves on the board
     def __getDepth(self,matrix):
         moveCount = self.rules.getMoveCount(matrix,self.__myToken)
@@ -97,8 +98,8 @@ class OthelloAI:
                     self.__graph[self.__nodePtr] = []
                     self.__graph[parNode].append(self.__nodePtr)
                     #self.__data[self.__nodePtr] = (i,j, curToken)
-                    self.__data[self.__nodePtr] = self.__getDataValues(curToken,curDepth,i,j,copy.deepcopy(matrix))
                     nextMatrix = self.rules.insertMove(curToken, copy.deepcopy(matrix), i, j)
+                    self.__data[self.__nodePtr] = self.__getDataValues(curToken,curDepth,i,j,copy.deepcopy(nextMatrix))
                     #need to calculate
                     self.__deepMoveBuilder(self.__nodePtr,curDepth+1,nextMatrix)
 
