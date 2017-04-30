@@ -115,7 +115,7 @@ class Board:
             self.turn.flip()
             return True
 
-        #where the player can moved
+        #where the player can move
         if(self.__isLegalMove(x,y)):
             y = self.__changeY(y)
             oldMatrix = np.copy(self.matrixB)
@@ -149,6 +149,14 @@ class Board:
                     blackScore += 1
 
         return whiteScore,blackScore
+
+    #displays all legal moves
+    def getLegalMoves(self):
+        for i in range(8):
+            for j in range(8):
+                tmpJ = chr(ord(chr(j+1))+64)
+                if(self.__isLegalMove(i+1,tmpJ)):
+                    print i+1, tmpJ
 
 
 
@@ -363,5 +371,7 @@ if(__name__ == "__main__"):
     b.move(8,'D')
     b.move(7,'A')
     b.move(7,'A')
-
+    j = 1
+    tmpJ = chr(ord(chr(j))+65)
+    print tmpJ
     print b.getTurn()

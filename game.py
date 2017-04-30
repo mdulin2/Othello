@@ -104,7 +104,7 @@ class Game:
 
                 if(x > 8):
                     x = 999 # code for no moves
-
+                self.board.getLegalMoves()
                 hasMoved = self.board.move(x,y)
 
             except:

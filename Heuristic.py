@@ -228,7 +228,7 @@ class Heuristic:
                 if(matrix[i,j] == self.__myToken):
                     value = self.__positionScores[i-1][j-1]
                     if(value < 11):
-                        totalScore += -150
+                        totalScore += -300
                     elif (value > 90):
                         totalScore += 150  #120
                     else:
