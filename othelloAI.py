@@ -31,7 +31,7 @@ class OthelloAI:
         self.abPrune = ABPrune()
         self.__graph = {}           # holds children in a list
         self.__data = {}            #[value,isMax,parent,alpha,beta,x,y,token]
-        self.__maxDepth = 2 # depth of search space used (must be odd)
+        self.__maxDepth = 3 # depth of search space used (must be odd)
         self.__nodePtr = 0          # 0 is root, used for naming nodes
         self.__graph[0] = []
         self.__data[0] = [-999999,True,"none",-999999,999999,0,0,self.__myToken] # not sure what this should be yet
@@ -41,14 +41,12 @@ class OthelloAI:
     def __deepMove(self, matrix):
         self.resetValues()
         self.__data = self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix))
-        print "AI Graph: ", self.__graph
+        #print "AI Graph: ", self.__graph
         #print "AI data:  ", self.__data
         #print "AI data: ",self.__data
         x,y = self.__getBestMove()
 
-        print x,y
         return x,y
-
 
     # recursively builds the graph to be searched. Limited to a depth
     # specified in self.__maxDepth
@@ -69,7 +67,6 @@ class OthelloAI:
         for i in range(1,9):
             for j in range(1,9):
                 if(self.rules.isLegalMove(i, j, matrix, curToken)):
-                    print "point: ",i,j
                     self.__nodePtr += 1
                     self.__graph[self.__nodePtr] = []
                     self.__graph[parNode].append(self.__nodePtr)
