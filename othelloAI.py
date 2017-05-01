@@ -18,6 +18,7 @@ class OthelloAI:
         self.__data = {}            #[value,isMax,parent,alpha,beta,x,y,token]
         self.__maxDepth = 3 # depth of search space used (must be odd)
         self.__nodePtr = 0          # 0 is root, used for naming nodes
+        self.__cornerArray = [False,False,False,False]
 
 
     # pulls the matrix from board and chooses a move to make.
@@ -46,15 +47,31 @@ class OthelloAI:
 
     # performs a move using minimax and alpha beta pruning
     def __deepMove(self, matrix):
+        self.__setCornerArray(matrix)
         self.printMoves(matrix,self.__myToken)
         self.__getDepth(matrix) #my computer is too slow to run this. You can mess around with this though
         self.resetValues()
         self.__data = self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix))
-        print "AI Graph: ", self.__graph
+        #print "AI Graph: ", self.__graph
         #print "AI data:  ", self.__data
         #print "AI data: ",self.__data
         x,y = self.__getBestMove()
         return x,y
+
+    #sets the corner values of the array; don't want to get too greedy!
+    def __setCornerArray(self,matrix):
+
+        if(matrix[1,1]== self.__myToken):
+            self.__cornerArray[0] = True
+
+        if(matrix[1,8]== self.__myToken):
+            self.__cornerArray[1] = True
+
+        if(matrix[8,1]== self.__myToken):
+            self.__cornerArray[2] = True
+
+        if(matrix[8,8]== self.__myToken):
+            self.__cornerArray[3] = True
 
 
     #How deep the tree should branch, based on the amount of moves on the board
@@ -62,10 +79,12 @@ class OthelloAI:
         moveCount = self.rules.getMoveCount(matrix,self.__myToken)
         print "Moves left in the game:" , moveCount
 
-        if(moveCount < 4):
+        if(moveCount < 5):
+            self.__maxDepth = 9
+        elif(moveCount > 4 and moveCount < 7):
             self.__maxDepth = 5
-        elif(moveCount > 3):
-            self.__maxDepth = 3
+        else:
+            self__maxDepth = 3
 
         #if the depth goes to deep with no further moves then the game will crash
         #So, this if statement fixes that issue
@@ -98,9 +117,11 @@ class OthelloAI:
                     self.__graph[self.__nodePtr] = []
                     self.__graph[parNode].append(self.__nodePtr)
                     #self.__data[self.__nodePtr] = (i,j, curToken)
+                    #print i,j,
                     nextMatrix = self.rules.insertMove(curToken, copy.deepcopy(matrix), i, j)
                     self.__data[self.__nodePtr] = self.__getDataValues(curToken,curDepth,i,j,copy.deepcopy(nextMatrix))
-                    #need to calculate
+                    #need to calculate\
+
                     self.__deepMoveBuilder(self.__nodePtr,curDepth+1,nextMatrix)
 
         return self.__data
@@ -133,7 +154,7 @@ class OthelloAI:
         #if at the max depth of the tree
         if(curDepth == self.__maxDepth):
             #value = heuristicValue
-            value = self.heuristic.calculateValue(matrix)
+            value = self.heuristic.calculateValue(matrix,self.__cornerArray)
             #value = 0
         parent = self.__getParent(curDepth)
         #need to find the parent right here

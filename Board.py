@@ -199,6 +199,8 @@ class Board:
         self.matrixB[0,0] = '*'
         for i in range(1,9):
             self.matrixB[0,i] =  chr(ord('A')+i-1)
+            if(i == 2):
+                self.matrixB[0,i] =  chr(ord('a')+i-1)
         for i in range(1,9):
             self.matrixB[i,0] = i
 
@@ -240,10 +242,6 @@ class Board:
             self.matrixB[4,4] = 'W'
             self.matrixB[5,4] = 'B'
             self.matrixB[5,5] = 'W'
-
-            #self.matrixB[1,3] = 'W'
-            #self.matrixB[1,4] = 'B'
-            #self.matrixB[1,5] = 'W'
 
         elif(config == 'B'):
             self.matrixB[4,5] = 'W'

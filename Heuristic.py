@@ -52,14 +52,18 @@ class Heuristic:
     # **option: add a multiplier in front of each to adjust their
     #       individual affect on the score. All are currently
     #       normalized to 0 < score < 1
-    def calculateValue(self, matrix):
+    def calculateValue(self, matrix,cornerArray):
         movesPlayed = self.getMovesPlayed(copy.deepcopy(matrix))
         score = 1
-        self.__setPosition(matrix)
+        self.__setPosition(matrix,cornerArray)
         if(movesPlayed < 17):
             stabVal = 1 # don't think i need this here
+            posVal = 1
+            #mobilityVal = 1
             mobilityVal = self.__getMobilityFactor(copy.deepcopy(matrix))
+
             posVal = self.__getPositionFactor(copy.deepcopy(matrix))
+
             score = self.__getWeightStage1(stabVal,mobilityVal,posVal)
 
             #score = self.__getChipRatio(movesPlayed, copy.deepcopy(matrix))
@@ -74,6 +78,7 @@ class Heuristic:
             score *= self.__getMobilityFactor(copy.deepcopy(matrix))
             #score *= self.__getPositionFactor(copy.deepcopy(matrix))
             #score = self.__getUserStability(copy.deepcopy(matrix))
+        #print '%.25f' % score
         return score
 
     def calculateBegin(self,matrix):
@@ -228,15 +233,17 @@ class Heuristic:
                 if(matrix[i,j] == self.__myToken):
                     value = self.__positionScores[i-1][j-1]
                     if(value < 11):
-                        totalScore += -400000
+                        totalScore =-300
+                        #print totalScore
                     elif (value > 90):
-                        totalScore += 400  #120
+                        totalScore += 300 #120
                     else:
-                        totalScore+=value
-        if(value <= 0):
-            normalized = 0 #1 / float(44.6875 * turnCount * 100)
+                        totalScore+=valuef
+        turnCount = self.getMovesPlayed(matrix)
+        if(totalScore <= 0):
+            normalized = 1 / float(44.6875 * (64 -turnCount) * 100)
         else:
-            turnCount = self.getMovesPlayed(matrix)
+
             normalized = totalScore / float(44.6875 * turnCount * 4)
             #print totalScore
             #print normalized
@@ -252,32 +259,26 @@ class Heuristic:
 
     #Would give the weights for each of the values for stage 2
     def __getWeightStage2(self,stabVal,mobilityVal,posVal):
-        stabVal = stabVal * .45
-        mobilityVal = mobilityVal *.31
-        posVal = posVal * .30
+        stabVal = stabVal * .30
+        mobilityVal = mobilityVal *.35
+        posVal = posVal * .35
         score = stabVal * mobilityVal * posVal
         return score
     #resets the value on the position table if the corner has been taken by the user
-    def __setPosition(self,matrix):
+    def __setPosition(self,matrix,cornerArray):
 
+        '''
         #top left
-        if(self.__myToken == matrix[1,1]):
-            self.__positionScores[0][1] = 80
-            self.__positionScores[1][0] = 80
+        if(self.__myToken == matrix[1,1] and cornerArray[0] == True):
+            print "here!"
+            self.__positionScores[0][1] = 70
+            self.__positionScores[1][0] = 70
             self.__positionScores[1][1] = 65
             self.__positionScores[0][2] = 60
             self.__positionScores[2][0] = 60
 
-        #bottom right
-        if(self.__myToken == matrix[8,8]):
-            self.__positionScores[6][7] = 80
-            self.__positionScores[6][6] = 65
-            self.__positionScores[7][6] = 80
-            self.__positionScores[5][7] = 65
-            self.__positionScores[7][5] = 65
-
         #top right
-        if(self.__myToken == matrix[1,8]):
+        if(self.__myToken == matrix[1,8] and cornerArray[1] == True):
             self.__positionScores[0][6] = 80
             self.__positionScores[1][7] = 65
             self.__positionScores[1][6] = 80
@@ -285,9 +286,20 @@ class Heuristic:
             self.__positionScores[2][7] = 65
 
         #bottom left
-        if(self.__myToken == matrix[8,1]):
+        if(self.__myToken == matrix[8,1] and cornerArray[2] == True):
             self.__positionScores[6][0] = 80
             self.__positionScores[7][1] = 80
             self.__positionScores[6][1] = 65
             self.__positionScores[5][0] = 65
             self.__positionScores[7][2] = 80
+
+
+        #bottom right
+        if(self.__myToken == matrix[8,8] and cornerArray[3] == True):
+            self.__positionScores[6][7] = 80
+            self.__positionScores[6][6] = 65
+            self.__positionScores[7][6] = 80
+            self.__positionScores[5][7] = 65
+            self.__positionScores[7][5] = 65
+        '''
+        pass
