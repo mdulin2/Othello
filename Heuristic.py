@@ -55,8 +55,8 @@ class Heuristic:
             posVal = 1
 
             mobilityVal = 1
-            #mobilityVal = self.__getMobilityFactor(copy.deepcopy(matrix))
-            #self.__getEdgeStability(matrix,self.__myToken)
+            mobilityVal = self.__getMobilityFactor(copy.deepcopy(matrix))
+            self.__getEdgeStability(matrix,self.__myToken)
             posVal = self.__getPositionFactor(copy.deepcopy(matrix),path)
             #self.XSquareCount(matrix)
             score = self.__getWeightStage1(stabVal,mobilityVal,posVal)
@@ -102,8 +102,8 @@ class Heuristic:
     #Would give the weights for each of the values for stage 2
     def __getWeightStage2(self,stabVal,mobilityVal,posVal):
         stabVal = stabVal * .30
-        mobilityVal = mobilityVal *.50
-        posVal = posVal * 1
+        mobilityVal = mobilityVal *.40
+        posVal = posVal * .30
         score = stabVal * mobilityVal * posVal
         return score
 
@@ -202,7 +202,7 @@ class Heuristic:
 
 
         if(totalScore <= 0):
-            normalized = 1 / float(44.6875 * turnCount * 10000)
+            normalized = 1 / float(44.6875 * turnCount * 1000000000)
         else:
 
             normalized = totalScore*8 / float(44.6875 * turnCount)

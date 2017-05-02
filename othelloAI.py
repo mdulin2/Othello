@@ -37,23 +37,25 @@ class OthelloAI:
                     if(self.rules.isLegalMove(i,j,matrix,turn)):
                         print i,j
 
-    def resetValues(self):
+    def resetValues(self,matrix):
         self.abPrune = ABPrune()
         self.__graph = {}           # holds children in a list
         self.__data = {}            #[value,isMax,parent,alpha,beta,x,y,token]
         self.__nodePtr = 0          # 0 is root, used for naming nodes
         self.__graph[0] = []
         self.__data[0] = [-999999,True,"none",-999999,999999,0,0,self.__myToken] # not sure what this should be yet
-
+        depth = self.__getDepth(matrix) #
+        self.heuristic.setDepth(depth)
 
     # performs a move using minimax and alpha beta pruning
     def __deepMove(self, matrix):
         self.__setCornerArray(matrix)
         self.printMoves(matrix,self.__myToken)
         #my computer is too slow to run this. You can mess around with this though
-        self.resetValues()
-        depth = self.__getDepth(matrix) #
-        self.heuristic.setDepth(depth)
+        moveCount = self.rules.getMoveCount(matrix,self.__myToken)
+        if(moveCount == 0):
+            return 999,C
+        self.resetValues(matrix)
         self.__data = self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix),[])
         #print "AI Graph: ", self.__graph
         #print "AI data:  ", self.__data
@@ -104,6 +106,7 @@ class OthelloAI:
         # if depth is reached, stop recursion
         if(self.__maxDepth+1 == curDepth):
             return
+
 
         # set whose turn it is
         if(curDepth % 2 == 1): # odd current depth
