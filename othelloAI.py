@@ -4,6 +4,7 @@ from abPrune import ABPrune
 import random as rand
 import time
 import copy
+import numpy
 
 class OthelloAI:
 
@@ -19,6 +20,7 @@ class OthelloAI:
         self.__maxDepth = 3 # depth of search space used (must be odd)
         self.__nodePtr = 0          # 0 is root, used for naming nodes
         self.__cornerArray = [False,False,False,False]
+        self.matrixB = numpy.zeros((8,8),dtype = bool)
 
 
     # pulls the matrix from board and chooses a move to make.
@@ -79,10 +81,10 @@ class OthelloAI:
         moveCount = self.rules.getMoveCount(matrix,self.__myToken)
         print "Moves left in the game:" , moveCount
 
-        if(moveCount < 5):
-            self.__maxDepth = 9
-        elif(moveCount > 4 and moveCount < 7):
-            self.__maxDepth = 5
+        if(moveCount < 4):
+            self.__maxDepth = 7
+        elif(moveCount >= 4 and moveCount < 7):
+            self.__maxDepth = 3
         else:
             self__maxDepth = 3
 
@@ -109,6 +111,7 @@ class OthelloAI:
         else:
             curToken = self.__oppToken
 
+        #self.__isViable(matrix)
         # search for all possible moves
         for i in range(1,9):
             for j in range(1,9):
@@ -152,9 +155,9 @@ class OthelloAI:
             value = sA
 
         #if at the max depth of the tree
-        if(curDepth == self.__maxDepth):
+        #if(curDepth == self.__maxDepth):
             #value = heuristicValue
-            value = self.heuristic.calculateValue(matrix,self.__cornerArray)
+        value = self.heuristic.calculateValue(matrix,self.__cornerArray)
             #value = 0
         parent = self.__getParent(curDepth)
         #need to find the parent right here

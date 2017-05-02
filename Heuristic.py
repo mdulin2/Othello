@@ -59,10 +59,11 @@ class Heuristic:
         if(movesPlayed < 17):
             stabVal = 1 # don't think i need this here
             posVal = 1
-            #mobilityVal = 1
+
+            mobilityVal = 1
             mobilityVal = self.__getMobilityFactor(copy.deepcopy(matrix))
 
-            posVal = self.__getPositionFactor(copy.deepcopy(matrix))
+            posVal = self.__getPositionFactor(copy.deepcopy(matrix),cornerArray)
 
             score = self.__getWeightStage1(stabVal,mobilityVal,posVal)
 
@@ -71,7 +72,7 @@ class Heuristic:
         elif(movesPlayed >= 17 and movesPlayed <58):
             stabVal = self.__getUserStability(copy.deepcopy(matrix))
             mobilityVal = self.__getMobilityFactor(copy.deepcopy(matrix))
-            posVal = self.__getPositionFactor(copy.deepcopy(matrix))
+            posVal = self.__getPositionFactor(copy.deepcopy(matrix),cornerArray)
             score = self.__getWeightStage2(stabVal,mobilityVal,posVal)
         else:
             score = self.__getChipRatio(movesPlayed, copy.deepcopy(matrix))
@@ -135,7 +136,7 @@ class Heuristic:
         #gets the average amount of moves for the opponent
 
         #max number of moves possible in 28 for a player
-        return (userMoves / opponentMoves)/float(28)
+        return (userMoves / opponentMoves)/float(24)
 
 
     '''
@@ -224,24 +225,56 @@ class Heuristic:
                     movesPossible += 1
         return movesPossible
 
+    def __positionHelper(self,matrix,i,j):
+        #leftCorner
+        if(i == 1 or j == 1 or j ==2 or i == 2):
+            if((i == 1 and j == 2)):
+                if(matrix[i,j] != self.__myToken and matrix[i,j] != '-' ):
+                    self.__positionScores[0][1] = 80
+            if((i == 2 and j == 2)):
+                #print "matrix: ",matrix[i,j]
+                if(self.__oppToken):
+                    self.__positionScores[1][1] = 80
+            if((i == 2 and j == 1)):
+                if(matrix[i,j] != self.__myToken and matrix[i,j] != '-' ):
+                    self.__positionScores[1][0] = 80
+
+
+        #right corner!
+        if((i == 1 and j == 7)):
+            if(matrix[i,j] != self.__myToken and matrix[i,j] != '-' ):
+                self.__positionScores[0][7] = 80
+        if((i == 2 and j == 7)):
+            #print "matrix: ",matrix[i,j]
+            if(matrix[i,j] != self.__myToken and matrix[i,j] != '-' ):
+                self.__positionScores[1][6] = 80
+        if((i == 2 and j == 8)):
+            if(matrix[i,j] != self.__myToken and matrix[i,j] != '-' ):
+                self.__positionScores[1][7] = 80
+
     # position factor judges the position the AI is in. Analyzes
     # corners, edges. How to judge against bad spaces? Cannot get this to work the way I want!
-    def __getPositionFactor(self, matrix):
+    def __getPositionFactor(self, matrix,cornerArray):
         totalScore = 0
         for i in range(1,9):
             for j in range(1,9):
+                #self.__positionHelper(matrix,i,j)
                 if(matrix[i,j] == self.__myToken):
                     value = self.__positionScores[i-1][j-1]
-                    if(value < 11):
-                        totalScore =-300
+
+                    if (value > 90):
+                        totalScore += 20000000#120
+                    elif(self.__isViable(cornerArray,i,j)):
+                        totalScore+=75
+                    elif(value < 11):
+                        totalScore =-20000000
                         #print totalScore
-                    elif (value > 90):
-                        totalScore += 300 #120
                     else:
-                        totalScore+=valuef
+                        totalScore+=value
+
         turnCount = self.getMovesPlayed(matrix)
         if(totalScore <= 0):
-            normalized = 1 / float(44.6875 * (64 -turnCount) * 100)
+            normalized = 1 / float(44.6875 * turnCount * 100)
         else:
 
             normalized = totalScore / float(44.6875 * turnCount * 4)
@@ -267,10 +300,10 @@ class Heuristic:
     #resets the value on the position table if the corner has been taken by the user
     def __setPosition(self,matrix,cornerArray):
 
-        '''
+
         #top left
         if(self.__myToken == matrix[1,1] and cornerArray[0] == True):
-            print "here!"
+            #print "here!"
             self.__positionScores[0][1] = 70
             self.__positionScores[1][0] = 70
             self.__positionScores[1][1] = 65
@@ -301,5 +334,40 @@ class Heuristic:
             self.__positionScores[7][6] = 80
             self.__positionScores[5][7] = 65
             self.__positionScores[7][5] = 65
-        '''
-        pass
+        return
+
+    #marks whether a move is viable based on the standards of having a corner played already
+    def __isViable(self,cornerArray,i,j):
+
+        if(((i ==2 and j ==1)or (i ==2 and j ==2)or (i ==1 and j ==2)) and cornerArray[0]):
+            if(i ==2 and j ==1):
+                return True
+            if(i == 1 and j == 2):
+                return True
+            if(i==2 and j ==2):
+                return True
+        elif(((i == 1 and j == 7) or (i ==2 and j ==7)or (i ==2 and j ==8)) and cornerArray[1]):
+            if(i ==1 and j ==7):
+                return True
+            if(i == 2 and j == 7):
+                return True
+            if(i==2 and j ==8):
+                return True
+        elif(((i == 7 and j == 1) or (i ==7 and j ==2)or (i ==8 and j ==2)) and cornerArray[2]):
+            if(i ==7and j ==1):
+                return True
+            if(i == 7 and j == 2):
+                return True
+            if(i==8 and j ==2):
+                return True
+        elif(((i == 8 and j == 7) or (i == 7 and j ==8)or (i ==7 and j ==7)) and cornerArray[3]):
+            if(i ==8and j ==7):
+                return True
+            if(i == 7 and j == 8):
+                return True
+            if(i==7 and j ==7):
+                return True
+
+        else:
+            return False
+        return False
