@@ -33,6 +33,7 @@ class Heuristic:
                                     [70,40,70,50,50,70,40,70],
                                     [10,10,45,45,45,45,10,10],
                                     [95,10,70,60,60,70,10,95]]
+        self.__depth = 3
 
     # calculates the value of a given board state.
     # higher score return, the better the position.
@@ -101,13 +102,14 @@ class Heuristic:
     #Would give the weights for each of the values for stage 2
     def __getWeightStage2(self,stabVal,mobilityVal,posVal):
         stabVal = stabVal * .30
-        mobilityVal = mobilityVal *.50
-        posVal = posVal * 1
+        mobilityVal = mobilityVal *.40
+        posVal = posVal * .30
         score = stabVal * mobilityVal * posVal
         return score
 
 
-
+    def setDepth(self,num):
+        self.__depth = num
 
     ###############################
     #Rating the amount of chips on the board
@@ -191,16 +193,16 @@ class Heuristic:
 
                     if (value > 90):
                         totalScore += 300
-                    elif(self.__isViable(path,i,j)):
+                    elif(self.__isViable(path,i,j,matrix)):
                         totalScore += 100
                     elif(value < 11):
-                        totalScore = totalScore - 50 * turnCount
+                        totalScore = -1000000
                     else:
                         totalScore+=value
 
 
         if(totalScore <= 0):
-            normalized = 1 / float(44.6875 * turnCount * 100)
+            normalized = 1 / float(44.6875 * turnCount * 1000000000)
         else:
 
             normalized = totalScore*8 / float(44.6875 * turnCount)
@@ -493,43 +495,62 @@ class Heuristic:
         return
 
     #marks whether a move is viable based on the standards of having a corner played already
-    def __isViable(self,path,i,j):
+    def __isViable(self,path,i,j,matrix):
 
-        if(((i ==2 and j ==1)or (i ==2 and j ==2)or (i ==1 and j ==2))):
-            if([1,1] in path and [i,j] in path):
-                print "Through the first if"
-                if(path.index([1,1]) > path.index([i,j])):
-                    print "Through the second if!", path.index([1,1]),path.index([i,j])
-                    return True
+        if((i ==2 and j ==1)or (i ==2 and j ==2)or (i ==1 and j ==2)):
+            #if my token is the corner
+            if(matrix[1,1] == self.__myToken and len(path) == self.__depth+1):
+                #if not in path then just this flip is good; it will flip others around it
+                if([1,1] in path and [i,j] in path):
+                    print "Going down the path?"
+                    #if contains the Xsquare as a prediction, then don't use it
+                    #or if that's the move choosen
+                    if(path.index([1,1]) < path.index([i,j])):
+                        print "Going through the path", path.index([1,1]),path.index([i,j])
+                        return True
+                    else:
+                        print "the path is bad! Go away!"
+                        return False
+                #if the matrix has the corner but doesn't have the other pieces in the path.
+                #Good
                 else:
-                    return False
+                    print "returning true from the miss at the wrong time?"
+                    return True
             else:
                 return False
 
         elif(((i == 1 and j == 7) or (i ==2 and j ==7)or (i ==2 and j ==8))):
-            if([1,8] in path and [i,j] in path):
-                if(path.index([1,8]) > path.index([i,j])):
-                    return True
+            if(matrix[1,8] == self.__myToken and len(path) == self.__depth+1):
+                if([1,8] in path and [i,j] in path):
+                    if(path.index([1,8]) < path.index([i,j])):
+                        return True
+                    else:
+                        return False
                 else:
-                    return False
+                    return True
             else:
                 return False
         elif(((i == 7 and j == 1) or (i ==7 and j ==2)or (i ==8 and j ==2))):
-            if([8,1] in path and [i,j] in path):
-                if(path.index([8,1]) > path.index([i,j])):
-                    return True
+            if(matrix[8,1] == self.__myToken and len(path) == self.__depth+1):
+
+                if([8,1] in path and [i,j] in path):
+                    if(path.index([8,1]) < path.index([i,j])):
+                        return True
+                    else:
+                        return False
                 else:
-                    return False
-            else:
-                return False
+                    return True
+            return False
         elif(((i == 8 and j == 7) or (i == 7 and j ==8)or (i ==7 and j ==7))):
-            if([8,8] in path and [i,j] in path):
-                if(path.index([8,8]) > path.index([i,j])):
-                    return True
+            if(matrix[8,8] == self.__myToken and len(path) == self.__depth+1):
+                if([8,8] in path and [i,j] in path):
+                    if(path.index([8,8]) < path.index([i,j])):
+                        return True
+                    else:
+                        return False
                 else:
-                    return False
+                    return True
             else:
                 return False
-        else:
-            return True
+
         return False
