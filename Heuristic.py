@@ -86,7 +86,7 @@ class Heuristic:
         movesPlayed = 0
         for i in range(1,9):
             for j in range(1,9):
-                if(matrix[i,j] != '-'):
+                if(matrix[i][j] != '-'):
                     movesPlayed += 1
         return movesPlayed
 
@@ -120,7 +120,7 @@ class Heuristic:
         myCount = 0
         for i in range(0,9):
             for j in range(1,9):
-                if(matrix[i,j] == self.__myToken):
+                if(matrix[i][j] == self.__myToken):
                     myCount += 1
         return myCount / float(movesPlayed)
 
@@ -188,7 +188,7 @@ class Heuristic:
         for i in range(1,9):
             for j in range(1,9):
                 #self.__positionHelper(matrix,i,j)
-                if(matrix[i,j] == self.__myToken):
+                if(matrix[i][j] == self.__myToken):
                     value = self.__positionScores[i-1][j-1]
 
                     if (value > 90):
@@ -215,21 +215,21 @@ class Heuristic:
     #The corner.
     def countWedgeSquares(self,matrix):
         count = 0
-        if(matrix[1,1] != self.__myToken):
-            if(matrix[2,2] == self.__myToken):
+        if(matrix[1][1] != self.__myToken):
+            if(matrix[2][2] == self.__myToken):
                 count+=1
 
-        if(matrix[1,8] != self.__myToken):
-            if(matrix[2,7] == self.__myToken):
+        if(matrix[1][8] != self.__myToken):
+            if(matrix[2][7] == self.__myToken):
                 count+=1
 
-        if(matrix[8,1] != self.__myToken):
-            if(matrix[7,2] == self.__myToken):
+        if(matrix[8][1] != self.__myToken):
+            if(matrix[7][2] == self.__myToken):
                 count+=1
 
-        if(matrix[8,8] != self.__myToken):
+        if(matrix[8][8] != self.__myToken):
 
-            if(matrix[8,7] == self.__myToken):
+            if(matrix[8][7] == self.__myToken):
                 count+=1
         return count
 
@@ -238,36 +238,36 @@ class Heuristic:
     #might want to base this off of the first board state of the iteration
     def XSquareCount(self,matrix):
         count = 0
-        if(matrix[1,1] != self.__myToken):
-            if(matrix[1,2] == self.__myToken):
+        if(matrix[1][1] != self.__myToken):
+            if(matrix[1][2] == self.__myToken):
                 count+=1
-            if(matrix[2,1] == self.__myToken):
+            if(matrix[2][1] == self.__myToken):
                 count+=1
-            if(matrix[2,2] == self.__myToken):
-                count+=1
-
-        if(matrix[1,8] != self.__myToken):
-            if(matrix[1,7] == self.__myToken):
-                count+=1
-            if(matrix[2,7] == self.__myToken):
-                count+=1
-            if(matrix[2,8] == self.__myToken):
+            if(matrix[2][2] == self.__myToken):
                 count+=1
 
-        if(matrix[8,1] != self.__myToken):
-            if(matrix[7,1] == self.__myToken):
+        if(matrix[1][8] != self.__myToken):
+            if(matrix[1][7] == self.__myToken):
                 count+=1
-            if(matrix[7,2] == self.__myToken):
+            if(matrix[2][7] == self.__myToken):
                 count+=1
-            if(matrix[8,2] == self.__myToken):
+            if(matrix[2][8] == self.__myToken):
                 count+=1
 
-        if(matrix[8,8] != self.__myToken):
-            if(matrix[7,8] == self.__myToken):
+        if(matrix[8][1] != self.__myToken):
+            if(matrix[7][1] == self.__myToken):
                 count+=1
-            if(matrix[8,7] == self.__myToken):
+            if(matrix[7][2] == self.__myToken):
                 count+=1
-            if(matrix[7,7] == self.__myToken):
+            if(matrix[8][2] == self.__myToken):
+                count+=1
+
+        if(matrix[8][8] != self.__myToken):
+            if(matrix[7][8] == self.__myToken):
+                count+=1
+            if(matrix[8][7] == self.__myToken):
+                count+=1
+            if(matrix[7][7] == self.__myToken):
                 count+=1
         return count
 
@@ -280,20 +280,20 @@ class Heuristic:
     def __getUserStability(self,matrix):
         stabCount = 1
         #checks the top left corner
-        if(self.__myToken == matrix[1,1]):
+        if(self.__myToken == matrix[1][1]):
             stabCount +=1
             stabCount += self.__triangles(matrix,0)
 
         #checks the bottom right corner
-        if(self.__myToken == matrix[8,8]):
+        if(self.__myToken == matrix[8][8]):
             stabCount +=1
             stabCount += self.__triangles(matrix,1)
         #checks the top right corner
-        if(self.__myToken == matrix[1,8]):
+        if(self.__myToken == matrix[1][8]):
             stabCount +=1
             stabCount += self.__triangles(matrix,2)
         #checks the bottom left corner
-        if(self.__myToken == matrix[8,1]):
+        if(self.__myToken == matrix[8][1]):
             stabCount +=1
             stabCount += self.__triangles(matrix,3)
         return stabCount/float(24) #24 is the maximum score possible here for a turn
@@ -303,21 +303,21 @@ class Heuristic:
     def __getCorners(self,matrix):
         corner = 0
         oppCorner = 0
-        if(matrix[1,1] == self.__myToken):
+        if(matrix[1][1] == self.__myToken):
             myCorner+=1
-        if(matrix[1,1] == self.__oppToken):
+        if(matrix[1][1] == self.__oppToken):
             oppCorner+=1
-        if(matrix[1,8] == self.__myToken):
+        if(matrix[1][8] == self.__myToken):
             myCorner+=1
-        if(matrix[1,8] == self.__oppToken):
+        if(matrix[1][8] == self.__oppToken):
             oppCorner+=1
-        if(matrix[8,1] == self.__myToken):
+        if(matrix[8][1] == self.__myToken):
             myCorner+=1
-        if(matrix[8,1] == self.__oppToken):
+        if(matrix[8][1] == self.__oppToken):
             oppCorner+=1
-        if(matrix[8,8] == self.__myToken):
+        if(matrix[8][8] == self.__myToken):
             myCorner+=1
-        if(matrix[8,8] == self.__oppToken):
+        if(matrix[8][8] == self.__oppToken):
             oppCorner+=1
         return myCorner,oppCorner
 
@@ -325,19 +325,19 @@ class Heuristic:
     #returns the number of __stable chips on the board
     def __getEdgeStability(self,matrix,token):
         count = 0
-        if(matrix[1,1] == token):
+        if(matrix[1][1] == token):
             count += self.__stableRight(matrix,token,0)
             count += self.__stableBottom(matrix,token,0)
             count+=1
-        if(matrix[1,8] == token):
+        if(matrix[1][8] == token):
             count += self.__stableLeft(matrix,token,0)
             count += self.__stableBottom(matrix,token,1)
             count+=1
-        if(matrix[8,1] == token):
+        if(matrix[8][1] == token):
             count += self.__stableTop(matrix,token,0)
             count += self.__stableRight(matrix,token,1)
             count+=1
-        if(matrix[8,8] == token):
+        if(matrix[8][8] == token):
             count += self.__stableLeft(matrix,token,1)
             count += self.__stableTop(matrix,token,1)
             count+=1
@@ -348,13 +348,13 @@ class Heuristic:
         count = 0
         if(direction == 0):
             for i in range(7,2,-1):
-                if(matrix[1,i] == token):
+                if(matrix[1][i] == token):
                     count+=1
                 else:
                     return count
         else:
             for i in range(7,2,-1):
-                if(matrix[8,i] == token):
+                if(matrix[8][i] == token):
                     count+=1
                 else:
                     return count
@@ -365,13 +365,13 @@ class Heuristic:
         count = 0
         if(direction == 0):
             for i in range(2,9):
-                if(matrix[1,i] == token):
+                if(matrix[1][i] == token):
                     count+=1
                 else:
                     return count
         else:
             for i in range(2,9):
-                if(matrix[8,i] == token):
+                if(matrix[8][i] == token):
                     count+=1
                 else:
                     return count
@@ -382,13 +382,13 @@ class Heuristic:
         count = 0
         if(direction == 0):
             for i in range(7,1,-1):
-                if(matrix[i,1] == token):
+                if(matrix[i][1] == token):
                     count+=1
                 else:
                     return count
         else:
             for i in range(7,1,-1):
-                if(matrix[i,8] == token):
+                if(matrix[i][8] == token):
                     count+=1
                 else:
                     return count
@@ -399,13 +399,13 @@ class Heuristic:
         count = 0
         if (direction == 0):
             for i in range(2,8):
-                if(matrix[i,1] == token):
+                if(matrix[i][1] == token):
                     count+=1
                 else:
                     return count
         else:
             for i in range(2,8):
-                if(matrix[i,8] == token):
+                if(matrix[i][8] == token):
                     count+=1
                 else:
                     return count
@@ -415,35 +415,35 @@ class Heuristic:
         count = 0
         #gets the stability of the top left corner
         if(typeCheck == 0):
-            if(self.__myToken == matrix[2,1]):
+            if(self.__myToken == matrix[2][1]):
                 count +=1
-            if(self.__myToken == matrix[1,2]):
+            if(self.__myToken == matrix[1][2]):
                 count +=1
             if(count ==2):
                 count +=3
 
         #checks the bottom right corner
         elif (typeCheck == 1):
-            if(self.__myToken == matrix[7,8]):
+            if(self.__myToken == matrix[7][8]):
                 count +=1
-            if(self.__myToken == matrix[8,7]):
+            if(self.__myToken == matrix[8][7]):
                 count +=1
             if (count == 2):
                 count +=3
         #checks the top right corner
         elif (typeCheck == 2):
-            if(self.__myToken == matrix[1,7]):
+            if(self.__myToken == matrix[1][7]):
                 count +=1
-            if(self.__myToken == matrix[2,8]):
+            if(self.__myToken == matrix[2][8]):
                 count +=1
             if (count == 2):
                 count +=3
 
         #checks the bottom left corner
         elif (typeCheck == 3):
-            if(self.__myToken == matrix[7,1]):
+            if(self.__myToken == matrix[7][1]):
                 count +=1
-            if(self.__myToken == matrix[8,2]):
+            if(self.__myToken == matrix[8][2]):
                 count +=1
             if (count == 2):
                 count +=3
@@ -459,7 +459,7 @@ class Heuristic:
 
         '''
         #top left
-        if(self.__myToken == matrix[1,1] and cornerArray[0] == True):
+        if(self.__myToken == matrix[1][1] and cornerArray[0] == True):
             #print "here!"
             self.__positionScores[0][1] = 70
             self.__positionScores[1][0] = 70
@@ -468,7 +468,7 @@ class Heuristic:
             self.__positionScores[2][0] = 60
 
         #top right
-        if(self.__myToken == matrix[1,8] and cornerArray[1] == True):
+        if(self.__myToken == matrix[1][8] and cornerArray[1] == True):
             self.__positionScores[0][6] = 80
             self.__positionScores[1][7] = 65
             self.__positionScores[1][6] = 80
@@ -476,7 +476,7 @@ class Heuristic:
             self.__positionScores[2][7] = 65
 
         #bottom left
-        if(self.__myToken == matrix[8,1] and cornerArray[2] == True):
+        if(self.__myToken == matrix[8][1] and cornerArray[2] == True):
             self.__positionScores[6][0] = 80
             self.__positionScores[7][1] = 80
             self.__positionScores[6][1] = 65
@@ -485,7 +485,7 @@ class Heuristic:
 
 
         #bottom right
-        if(self.__myToken == matrix[8,8] and cornerArray[3] == True):
+        if(self.__myToken == matrix[8][8] and cornerArray[3] == True):
             self.__positionScores[6][7] = 80
             self.__positionScores[6][6] = 65
             self.__positionScores[7][6] = 80
@@ -499,7 +499,7 @@ class Heuristic:
 
         if((i ==2 and j ==1)or (i ==2 and j ==2)or (i ==1 and j ==2)):
             #if my token is the corner
-            if(matrix[1,1] == self.__myToken and len(path) == self.__depth+1):
+            if(matrix[1][1] == self.__myToken and len(path) == self.__depth+1):
                 #if not in path then just this flip is good; it will flip others around it
                 if([1,1] in path and [i,j] in path):
                     print "Going down the path?"
@@ -520,7 +520,7 @@ class Heuristic:
                 return False
 
         elif(((i == 1 and j == 7) or (i ==2 and j ==7)or (i ==2 and j ==8))):
-            if(matrix[1,8] == self.__myToken and len(path) == self.__depth+1):
+            if(matrix[1][8] == self.__myToken and len(path) == self.__depth+1):
                 if([1,8] in path and [i,j] in path):
                     if(path.index([1,8]) < path.index([i,j])):
                         return True
@@ -531,7 +531,7 @@ class Heuristic:
             else:
                 return False
         elif(((i == 7 and j == 1) or (i ==7 and j ==2)or (i ==8 and j ==2))):
-            if(matrix[8,1] == self.__myToken and len(path) == self.__depth+1):
+            if(matrix[8][1] == self.__myToken and len(path) == self.__depth+1):
 
                 if([8,1] in path and [i,j] in path):
                     if(path.index([8,1]) < path.index([i,j])):
@@ -542,7 +542,7 @@ class Heuristic:
                     return True
             return False
         elif(((i == 8 and j == 7) or (i == 7 and j ==8)or (i ==7 and j ==7))):
-            if(matrix[8,8] == self.__myToken and len(path) == self.__depth+1):
+            if(matrix[8][8] == self.__myToken and len(path) == self.__depth+1):
                 if([8,8] in path and [i,j] in path):
                     if(path.index([8,8]) < path.index([i,j])):
                         return True
