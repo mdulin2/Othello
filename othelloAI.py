@@ -50,8 +50,10 @@ class OthelloAI:
     def __deepMove(self, matrix):
         self.__setCornerArray(matrix)
         self.printMoves(matrix,self.__myToken)
-        self.__getDepth(matrix) #my computer is too slow to run this. You can mess around with this though
+        #my computer is too slow to run this. You can mess around with this though
         self.resetValues()
+        depth = self.__getDepth(matrix) #
+        self.heuristic.setDepth(depth)
         self.__data = self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix),[])
         #print "AI Graph: ", self.__graph
         #print "AI data:  ", self.__data
@@ -80,18 +82,18 @@ class OthelloAI:
         print "Moves left in the game:" , moveCount
 
         if(moveCount < 4):
-            self.__maxDepth = 5
+            self.__maxDepth = 7
         elif(moveCount >= 4 and moveCount < 7):
             self.__maxDepth = 3
         else:
-            self__maxDepth = 3
+            self.__maxDepth = 3
 
         #if the depth goes to deep with no further moves then the game will crash
         #So, this if statement fixes that issue
         if(self.__maxDepth >= (moveCount)):
             self.__maxDepth = moveCount
 
-        return
+        return self.__maxDepth
 
 
     # recursively builds the graph to be searched. Limited to a depth
@@ -109,20 +111,18 @@ class OthelloAI:
         else:
             curToken = self.__oppToken
 
-        moved = False
         #self.__isViable(matrix)
         # search for all possible moves
         for i in range(1,9):
             for j in range(1,9):
                 if(self.rules.isLegalMove(i, j, matrix, curToken)):
-                    moved = True
                     path.append([i,j])
                     self.__nodePtr += 1
                     self.__graph[self.__nodePtr] = []
                     self.__graph[parNode].append(self.__nodePtr)
                     nextMatrix = self.rules.insertMove(curToken, copy.deepcopy(matrix), i, j)
                     #print i,j,
-                    self.__data[self.__nodePtr] = self.__getDataValues(curToken,curDepth,i,j,copy.deepcopy(nextMatrix),path)
+                    self.__data[self.__nodePtr] = self.__getDataValues(curToken,curDepth,i,j,copy.deepcopy(nextMatrix),copy.deepcopy(path))
 
                     self.__deepMoveBuilder(self.__nodePtr,curDepth+1,nextMatrix,[])
 
