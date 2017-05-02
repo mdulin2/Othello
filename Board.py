@@ -1,5 +1,5 @@
-import numpy as np
 from rules import Rules
+import copy
 import random as rand
 
 
@@ -61,9 +61,9 @@ class Board:
         # import rules of Othello
         self.rules = Rules()
         #making the board matrix
-        self.matrixB = np.chararray((9,9))
+        self.matrixB = self.__initMatrix(9,9)
         # init previous matrix
-        self.__prevMatrix = np.copy(self.matrixB)
+        self.__prevMatrix = copy.deepcopy(self.matrixB)
         #whose turn it is; 'B' for black and 'W' for white.
         self.turn = Turn(turn)
         # set up the game and initial Board
@@ -75,12 +75,12 @@ class Board:
         for i in range(0,9):
             for j in range(0,9):
                 if(i ==x and j == y):
-                    print(Color.RED + "'" + self.matrixB[i,j] + "'" + Color.END),
-                elif(self.matrixB[i,j] != oldMatrix[i,j]):
-                    print(Color.YELLOW + "'" +self.matrixB[i,j]+ "'" + Color.END ),
+                    print(Color.RED + "'" + self.matrixB[i][j] + "'" + Color.END),
+                elif(self.matrixB[i][j] != oldMatrix[i][j]):
+                    print(Color.YELLOW + "'" + self.matrixB[i][j] + "'" + Color.END ),
 
                 else:
-                    print "'"+self.matrixB[i,j]+ "'",
+                    print "'" + str(self.matrixB[i][j]) + "'",
             print
         print
         self.scoreboard.displayScore()
@@ -90,7 +90,7 @@ class Board:
     def printBoard(self):
         for i in range(0,9):
             for j in range(0,9):
-                print "'"+self.matrixB[i,j]+ "'",
+                print "'"+str(self.matrixB[i][j])+ "'",
             print
         print
         self.scoreboard.displayScore()
@@ -118,8 +118,8 @@ class Board:
         #where the player can move
         if(self.__isLegalMove(x,y)):
             y = self.__changeY(y)
-            oldMatrix = np.copy(self.matrixB)
-            self.__prevMatrix = np.copy(self.matrixB)
+            oldMatrix = copy.deepcopy(self.matrixB)
+            self.__prevMatrix = copy.deepcopy(self.matrixB)
             self.matrixB = self.rules.insertMove(self.turn.getTurn(), self.matrixB, x, y)
 
             #scorring the game
@@ -143,9 +143,9 @@ class Board:
         for i in range(1,9):
             for j in range(1,9):
 
-                if(self.matrixB[i,j] == 'W'):
+                if(self.matrixB[i][j] == 'W'):
                     whiteScore += 1
-                elif(self.matrixB[i,j] == 'B'):
+                elif(self.matrixB[i][j] == 'B'):
                     blackScore += 1
 
         return whiteScore,blackScore
@@ -165,7 +165,7 @@ class Board:
     # this is called in the event of a dispute. Resets the
     # scoreboard and proper turn.
     def revertBoard(self):
-        self.matrixB = np.copy(self.__prevMatrix)
+        self.matrixB = copy.deepcopy(self.__prevMatrix)
         wScore,bScore = self.getScore()
         self.scoreboard.updateScore(wScore,bScore)
         self.turn.flip()
@@ -188,6 +188,17 @@ class Board:
             #PRIVATE
     ############################
 
+    # initialize a game board matrix to be X by Y char arrays
+    def __initMatrix(self, x, y):
+        matrix = []
+        for i in range(0,y):
+            line = []
+            for i in range(0,x):
+                line.append('-')
+            matrix.append(line)
+        return matrix
+
+
     #Running the initial set ups for the game.
     def __gameSetUp(self, config='W'):
         self.__createBoard()
@@ -195,14 +206,15 @@ class Board:
 
     #adds the values onto the Othello Board for references.
     def __createBoard(self):
-        self.matrixB[:] = '-'
-        self.matrixB[0,0] = '*'
+        self.matrixB[0][0] = '*'
         for i in range(1,9):
-            self.matrixB[0,i] =  chr(ord('A')+i-1)
+            self.matrixB[0][i] =  chr(ord('A')+i-1)
             if(i == 2):
-                self.matrixB[0,i] =  chr(ord('a')+i-1)
+                self.matrixB[0][i] =  chr(ord('a')+i-1)
         for i in range(1,9):
-            self.matrixB[i,0] = i
+            self.matrixB[i][0] = i
+
+        print "create board"
 
 
     #Sets the starting pieces to the game without toggling the turn.
@@ -238,10 +250,10 @@ class Board:
             #self.matrixB[2,1] = 'B'
             '''
         if(config == 'W'):
-            self.matrixB[4,5] = 'B'
-            self.matrixB[4,4] = 'W'
-            self.matrixB[5,4] = 'B'
-            self.matrixB[5,5] = 'W'
+            self.matrixB[4][5] = 'B'
+            self.matrixB[4][4] = 'W'
+            self.matrixB[5][4] = 'B'
+            self.matrixB[5][5] = 'W'
 
 
 
@@ -251,10 +263,10 @@ class Board:
             #self.matrixB[1,8] = 'B'
 
         elif(config == 'B'):
-            self.matrixB[4,5] = 'W'
-            self.matrixB[4,4] = 'B'
-            self.matrixB[5,4] = 'W'
-            self.matrixB[5,5] = 'B'
+            self.matrixB[4][5] = 'W'
+            self.matrixB[4][4] = 'B'
+            self.matrixB[5][4] = 'W'
+            self.matrixB[5][5] = 'B'
 
         else:
             raise Exception("startingConfig bound error")
@@ -294,14 +306,14 @@ class Board:
     #Returns true if the spot is open, false otherwise.
     def __isSpotOpen(self,x,y):
         y = self.__changeY(y)
-        return(self.matrixB[x,y] == '-')
+        return(self.matrixB[x][y] == '-')
 
     #Given an oldmatrix it will find the amount of differences from board to board.
     def __getNumberOfChanges(self,oldMatrix):
         count = 0
         for i in range(0,9):
             for j in range(0,9):
-                if(self.matrixB[i,j] != oldMatrix[i,j]):
+                if(self.matrixB[i][j] != oldMatrix[i][j]):
                     count+=1
         return count-1
 # if Board.py is top-level module, run main. (used only for testing)

@@ -1,4 +1,3 @@
-import numpy as np
 from Board import Board
 from Board import Turn
 from othelloAI import OthelloAI

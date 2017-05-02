@@ -1,4 +1,3 @@
-import numpy as np
 
 class Rules:
 
@@ -21,7 +20,7 @@ class Rules:
     #turn is the person's turn to move ('W' or 'B')
     #move is the direction that the search is attempting to go.
     def isLegalMove(self,x,y,matrixB,turn):
-        if(matrixB[x,y] != '-'):
+        if(matrixB[x][y] != '-'):
             return False
         if(self.__isLegalHelper(x,y,matrixB,turn,'U',0)):
             return True
@@ -53,7 +52,7 @@ class Rules:
         count = 0
         for i in range(1,9):
             for j in range(1,9):
-                if(matrix[i,j] == '-'):
+                if(matrix[i][j] == '-'):
                     if(self.isLegalMove(i,j,matrix,turn)):
                         count +=1
         return count
@@ -114,11 +113,11 @@ class Rules:
 
         if(tmp):
 
-            if(matrixB[x,y] == opp):
+            if(matrixB[x][y] == opp):
                 #flips the actual value of the chip on the board.
                 matrixB = self.__flipChip(x,y,matrixB)
                 return self.__flipChipStringHelper(x,y,matrixB,turn,move,score)
-            elif(matrixB[x,y] == turn):
+            elif(matrixB[x][y] == turn):
                 #returns the matrix once it is finished being altered
                 return matrixB,score
 
@@ -167,11 +166,11 @@ class Rules:
 
         try:
 
-            if(matrixB[x,y] == opp):
+            if(matrixB[x][y] == opp):
                 score+=1
                 x,y = self.__getCoordinate(x,y,move)
                 return self.__lineCheckHelper(x,y,matrixB,turn,move,score)
-            elif(matrixB[x,y] ==turn):
+            elif(matrixB[x][y] ==turn):
                 return score > 0,score
             else:
 
@@ -195,10 +194,10 @@ class Rules:
         x,y = self.__getCoordinate(x,y,move)
 
         try:
-            if(matrixB[x,y] == opp):
+            if(matrixB[x][y] == opp):
                 score+=1
                 return self.__isLegalHelper(x,y,matrixB,turn,move,score)
-            elif(matrixB[x,y] == turn):
+            elif(matrixB[x][y] == turn):
                 return score > 0
             else:
                 return False
@@ -233,18 +232,18 @@ class Rules:
 
 
     def __makeMove(self,turn, matrix, x, y):
-        matrix[x,y] = turn
+        matrix[x][y] = turn
         return matrix
 
     # flips the color of the chip in the x,y location of the
     # passed in matrix. returns resulting matrix
     def __flipChip(self,x,y,matrix):
-        assert(matrix[x,y] != '-')
+        assert(matrix[x][y] != '-')
 
-        if(matrix[x,y] == 'W'):
-            matrix[x,y] = 'B'
+        if(matrix[x][y] == 'W'):
+            matrix[x][y] = 'B'
         else:
-            matrix[x,y] = 'W'
+            matrix[x][y] = 'W'
 
         return matrix
 
@@ -253,7 +252,7 @@ class Rules:
     def __isFull(self, matrix):
         for i in range(1,9):
             for j in range(1,9):
-                if(matrix[i,j] == '-'):
+                if(matrix[i][j] == '-'):
                     return False
         return True
 
@@ -263,7 +262,7 @@ class Rules:
     def __canMove(self, matrix,turn):
         for i in range(1,9):
             for j in range(1,9):
-                if(matrix[i,j] == '-'):
+                if(matrix[i][j] == '-'):
                     if(self.isLegalMove(i,j,matrix,turn)):
                         return True
         return False

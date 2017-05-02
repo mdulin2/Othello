@@ -4,7 +4,6 @@ from abPrune import ABPrune
 import random as rand
 import time
 import copy
-import numpy
 
 class OthelloAI:
 
@@ -25,6 +24,7 @@ class OthelloAI:
     # pulls the matrix from board and chooses a move to make.
     # returns chosen move as an integer X and a char Y.
     def makeMove(self, board):
+        #x,y = self.__simpleMove(board.matrixB)
         x,y = self.__deepMove(board.matrixB)
         return x, self.__changeY(y)
 
@@ -33,7 +33,7 @@ class OthelloAI:
         print ("ALl of the moves: ")
         for i in range(1,9):
             for j in range(1,9):
-                if(matrix[i,j] == '-'):
+                if(matrix[i][j] == '-'):
                     if(self.rules.isLegalMove(i,j,matrix,turn)):
                         print i,j
 
@@ -62,16 +62,16 @@ class OthelloAI:
     #sets the corner values of the array; don't want to get too greedy!
     def __setCornerArray(self,matrix):
 
-        if(matrix[1,1]== self.__myToken):
+        if(matrix[1][1]== self.__myToken):
             self.__cornerArray[0] = True
 
-        if(matrix[0,7]== self.__myToken):
+        if(matrix[0][7]== self.__myToken):
             self.__cornerArray[1] = True
 
-        if(matrix[7,0]== self.__myToken):
+        if(matrix[7][0]== self.__myToken):
             self.__cornerArray[2] = True
 
-        if(matrix[7,1]== self.__myToken):
+        if(matrix[7][1]== self.__myToken):
             self.__cornerArray[3] = True
 
     #How deep the tree should branch, based on the amount of moves on the board
