@@ -20,7 +20,6 @@ class OthelloAI:
         self.__maxDepth = 3 # depth of search space used (must be odd)
         self.__nodePtr = 0          # 0 is root, used for naming nodes
         self.__cornerArray = [False,False,False,False]
-        self.matrixB = numpy.zeros((8,8),dtype = bool)
 
 
     # pulls the matrix from board and chooses a move to make.
@@ -53,7 +52,7 @@ class OthelloAI:
         self.printMoves(matrix,self.__myToken)
         self.__getDepth(matrix) #my computer is too slow to run this. You can mess around with this though
         self.resetValues()
-        self.__data = self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix))
+        self.__data = self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix),[])
         #print "AI Graph: ", self.__graph
         #print "AI data:  ", self.__data
         #print "AI data: ",self.__data
@@ -66,15 +65,14 @@ class OthelloAI:
         if(matrix[1,1]== self.__myToken):
             self.__cornerArray[0] = True
 
-        if(matrix[1,8]== self.__myToken):
+        if(matrix[0,7]== self.__myToken):
             self.__cornerArray[1] = True
 
-        if(matrix[8,1]== self.__myToken):
+        if(matrix[7,0]== self.__myToken):
             self.__cornerArray[2] = True
 
-        if(matrix[8,8]== self.__myToken):
+        if(matrix[7,1]== self.__myToken):
             self.__cornerArray[3] = True
-
 
     #How deep the tree should branch, based on the amount of moves on the board
     def __getDepth(self,matrix):
@@ -82,7 +80,7 @@ class OthelloAI:
         print "Moves left in the game:" , moveCount
 
         if(moveCount < 4):
-            self.__maxDepth = 7
+            self.__maxDepth = 5
         elif(moveCount >= 4 and moveCount < 7):
             self.__maxDepth = 3
         else:
@@ -100,7 +98,7 @@ class OthelloAI:
     # specified in self.__maxDepth
     # populates self.__graph with children data
     # populates self.__data with x,y and token: [x,y,token]
-    def __deepMoveBuilder(self,parNode, curDepth, matrix):
+    def __deepMoveBuilder(self,parNode, curDepth, matrix,path):
         # if depth is reached, stop recursion
         if(self.__maxDepth+1 == curDepth):
             return
@@ -111,22 +109,25 @@ class OthelloAI:
         else:
             curToken = self.__oppToken
 
+        moved = False
         #self.__isViable(matrix)
         # search for all possible moves
         for i in range(1,9):
             for j in range(1,9):
                 if(self.rules.isLegalMove(i, j, matrix, curToken)):
+                    moved = True
+                    path.append([i,j])
                     self.__nodePtr += 1
                     self.__graph[self.__nodePtr] = []
                     self.__graph[parNode].append(self.__nodePtr)
-                    #self.__data[self.__nodePtr] = (i,j, curToken)
-                    #print i,j,
                     nextMatrix = self.rules.insertMove(curToken, copy.deepcopy(matrix), i, j)
-                    self.__data[self.__nodePtr] = self.__getDataValues(curToken,curDepth,i,j,copy.deepcopy(nextMatrix))
-                    #need to calculate\
+                    #print i,j,
+                    self.__data[self.__nodePtr] = self.__getDataValues(curToken,curDepth,i,j,copy.deepcopy(nextMatrix),path)
 
-                    self.__deepMoveBuilder(self.__nodePtr,curDepth+1,nextMatrix)
+                    self.__deepMoveBuilder(self.__nodePtr,curDepth+1,nextMatrix,[])
 
+
+            #should do something if the AI is out of moves
         return self.__data
 
 
@@ -139,10 +140,8 @@ class OthelloAI:
                 if(self.__nodePtr == child):
                     return key
 
-
-
-    #sets the data values to make the alpha beta prunning possible
-    def __getDataValues(self,curToken,curDepth,i,j,matrix):
+    #gets the heuristic value
+    def __getDataValues(self,curToken,curDepth,i,j,matrix,path):
         sA = -999999
         sB = 999999
 
@@ -155,10 +154,8 @@ class OthelloAI:
             value = sA
 
         #if at the max depth of the tree
-        #if(curDepth == self.__maxDepth):
-            #value = heuristicValue
-        value = self.heuristic.calculateValue(matrix,self.__cornerArray)
-            #value = 0
+        if(curDepth == self.__maxDepth):
+            value = self.heuristic.calculateValue(matrix,self.__cornerArray,path)
         parent = self.__getParent(curDepth)
         #need to find the parent right here
 
