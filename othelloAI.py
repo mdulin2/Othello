@@ -1,6 +1,7 @@
 from rules import Rules
 from Heuristic import Heuristic
 from abPrune import ABPrune
+from operator import itemgetter
 import random as rand
 import time
 import copy
@@ -16,9 +17,9 @@ class OthelloAI:
         self.__oppToken = oppToken
         self.__graph = {}           # holds children in a list
         self.__data = {}            #[value,isMax,parent,alpha,beta,x,y,token]
-        self.__maxDepth = 3 # depth of search space used (must be odd)
+        self.__maxDepth = 5         # depth of search space used (must be odd)
+        self.__midDepth = 3         # middle prune mark
         self.__nodePtr = 0          # 0 is root, used for naming nodes
-        self.__cornerArray = [False,False,False,False]
 
 
     # pulls the matrix from board and chooses a move to make.
@@ -37,65 +38,48 @@ class OthelloAI:
                     if(self.rules.isLegalMove(i,j,matrix,turn)):
                         print i,j
 
-    def resetValues(self,matrix):
+
+    # initialize all search space variables for new build and search
+    def __resetValues(self,matrix, moveCount):
         self.abPrune = ABPrune()
         self.__graph = {}           # holds children in a list
         self.__data = {}            #[value,isMax,parent,alpha,beta,x,y,token]
         self.__nodePtr = 0          # 0 is root, used for naming nodes
         self.__graph[0] = []
-        self.__data[0] = [-999999,True,"none",-999999,999999,0,0,self.__myToken] # not sure what this should be yet
-        depth = self.__getDepth(matrix) #
-        self.heuristic.setDepth(depth)
+        self.__data[0] = [-999999,True,"none",-999999,999999,0,0,self.__myToken]
+        self.__setDepth(matrix, moveCount)
+        self.heuristic.setDepth(self.__maxDepth)
+
 
     # performs a move using minimax and alpha beta pruning
     def __deepMove(self, matrix):
-        self.__setCornerArray(matrix)
-        self.printMoves(matrix,self.__myToken)
-        #my computer is too slow to run this. You can mess around with this though
         moveCount = self.rules.getMoveCount(matrix,self.__myToken)
         if(moveCount == 0):
-            return 999,C
-        self.resetValues(matrix)
-        self.__data = self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix),[])
-        #print "AI Graph: ", self.__graph
-        #print "AI data:  ", self.__data
-        #print "AI data: ",self.__data
+            return 999,'C'
+
+        self.__resetValues(matrix, moveCount)
+        self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix),[])
+        self.__reorderChildren(0)
+
+        if(self.__maxDepth > self.__midDepth):
+            self.__pruneMiddle()
+            # after prune we must add more levels accordingly. we current cut off at midDepth
+            # current problem: how to keep track of board states
+            pass
+
+        #self.__printGraph()
+        #self.__printData()
         x,y = self.__getBestMove()
         return x,y
 
-    #sets the corner values of the array; don't want to get too greedy!
-    def __setCornerArray(self,matrix):
 
-        if(matrix[1][1]== self.__myToken):
-            self.__cornerArray[0] = True
-
-        if(matrix[0][7]== self.__myToken):
-            self.__cornerArray[1] = True
-
-        if(matrix[7][0]== self.__myToken):
-            self.__cornerArray[2] = True
-
-        if(matrix[7][1]== self.__myToken):
-            self.__cornerArray[3] = True
-
-    #How deep the tree should branch, based on the amount of moves on the board
-    def __getDepth(self,matrix):
-        moveCount = self.rules.getMoveCount(matrix,self.__myToken)
-        print "Moves left in the game:" , moveCount
-
-        if(moveCount < 4):
-            self.__maxDepth = 7
-        elif(moveCount >= 4 and moveCount < 7):
+    # Set max tree depth, based on the amount of moves on the board.
+    # moveCount: number of moves available to the AI
+    def __setDepth(self,matrix, moveCount):
+        if(moveCount >= 9):
             self.__maxDepth = 3
         else:
-            self.__maxDepth = 3
-
-        #if the depth goes to deep with no further moves then the game will crash
-        #So, this if statement fixes that issue
-        if(self.__maxDepth >= (moveCount)):
-            self.__maxDepth = moveCount
-
-        return self.__maxDepth
+            self.__maxDepth = 5
 
 
     # recursively builds the graph to be searched. Limited to a depth
@@ -104,9 +88,8 @@ class OthelloAI:
     # populates self.__data with x,y and token: [x,y,token]
     def __deepMoveBuilder(self,parNode, curDepth, matrix,path):
         # if depth is reached, stop recursion
-        if(self.__maxDepth+1 == curDepth):
+        if(self.__midDepth+1 == curDepth):
             return
-
 
         # set whose turn it is
         if(curDepth % 2 == 1): # odd current depth
@@ -114,7 +97,6 @@ class OthelloAI:
         else:
             curToken = self.__oppToken
 
-        #self.__isViable(matrix)
         # search for all possible moves
         for i in range(1,9):
             for j in range(1,9):
@@ -124,27 +106,14 @@ class OthelloAI:
                     self.__graph[self.__nodePtr] = []
                     self.__graph[parNode].append(self.__nodePtr)
                     nextMatrix = self.rules.insertMove(curToken, copy.deepcopy(matrix), i, j)
-                    #print i,j,
-                    self.__data[self.__nodePtr] = self.__getDataValues(curToken,curDepth,i,j,copy.deepcopy(nextMatrix),copy.deepcopy(path))
+
+                    self.__setDataValues(curToken,curDepth,i,j,copy.deepcopy(nextMatrix),copy.deepcopy(path), parNode)
 
                     self.__deepMoveBuilder(self.__nodePtr,curDepth+1,nextMatrix,[])
 
 
-            #should do something if the AI is out of moves
-        return self.__data
-
-
-    #gets the parent of a nodes
-    #this could be more efficient i just don't know how to do this
-    def __getParent(self,curDepth):
-        #print curDepth
-        for key in self.__graph:
-            for child in self.__graph[key]:
-                if(self.__nodePtr == child):
-                    return key
-
     #gets the heuristic value
-    def __getDataValues(self,curToken,curDepth,i,j,matrix,path):
+    def __setDataValues(self, curToken, curDepth, i, j, matrix, path, parent):
         sA = -999999
         sB = 999999
 
@@ -156,20 +125,54 @@ class OthelloAI:
             token = True
             value = sA
 
-        #if at the max depth of the tree
-        if(curDepth == self.__maxDepth):
-            value = self.heuristic.calculateValue(matrix,self.__cornerArray,path)
-        parent = self.__getParent(curDepth)
-        #need to find the parent right here
+        #if at the max depth of the tree or for reordering the first
+        if(curDepth == self.__maxDepth or curDepth == 1):
+            value = self.heuristic.calculateValue(matrix,path)
 
-        return [value,token,parent,sA,sB,i,j,curToken]
+        self.__data[self.__nodePtr] = [value,token,parent,sA,sB,i,j,curToken]
+
+
+    # given a node, reorders its children according to their heuristic value.
+    # Best is on the left.
+    def __reorderChildren(self, parent):
+        childLst = self.__graph[parent]
+        valueLst = []
+
+        for child in childLst:
+            valueLst.append((child, self.__data[child][0]))
+
+        # sort the list
+        if(len(valueLst) > 1):
+            sortedLst = list(reversed(sorted(valueLst,key=itemgetter(1))))
+            sortedLst = map(itemgetter(0), sortedLst)
+            self.__graph[parent] = sortedLst
+
+
+    # at the mid point of graph building, prune bad paths.
+    def __pruneMiddle(self):
+        self.abPrune.initGraph(self.__graph,self.__data)
+        visited = []
+        visited = self.abPrune.minimax(0)
+
+        graphCopy = copy.deepcopy(self.__graph)
+        for node in graphCopy:
+            if node not in visited:
+                del self.__graph[node]
+                del self.__data[node]
+            else:
+                # remove child references
+                for child in graphCopy[node]:
+                    if child not in visited:
+                        self.__graph[node].remove(child)
+        return
 
 
     # returns the x and y of the best move as
     # searched by abPrune
     def __getBestMove(self):
         self.abPrune.initGraph(self.__graph,self.__data)
-        self.abPrune.minimax(0)
+        visited = self.abPrune.minimax(0)
+        # print "visited: ", visited
         return self.abPrune.getBestPlace()
 
 
@@ -189,3 +192,14 @@ class OthelloAI:
     # convert Y into its proper board form (character)
     def __changeY(self,y):
         return chr(y + 64)
+
+
+    def __printGraph(self):
+        print "Graph: "
+        for node in self.__graph:
+            print node, self.__graph[node]
+
+    def __printData(self):
+        print "Data: "
+        for node in self.__data:
+            print node, self.__data[node]

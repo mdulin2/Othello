@@ -45,11 +45,11 @@ class Heuristic:
     # **option: add a multiplier in front of each to adjust their
     #       individual affect on the score. All are currently
     #       normalized to 0 < score < 1
-    def calculateValue(self, matrix,cornerArray,path):
+    def calculateValue(self, matrix,path):
         #print path
         movesPlayed = self.getMovesPlayed(copy.deepcopy(matrix))
         score = 1
-        self.__setPosition(matrix,cornerArray)
+        self.__setPosition(matrix)
         if(movesPlayed < 17):
             stabVal = 1 # don't think i need this here
             posVal = 1
@@ -455,7 +455,7 @@ class Heuristic:
     ##############################
 
     #resets the value on the position table if the corner has been taken by the user
-    def __setPosition(self,matrix,cornerArray):
+    def __setPosition(self,matrix):
 
         '''
         #top left
