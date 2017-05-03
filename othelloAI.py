@@ -16,7 +16,8 @@ class OthelloAI:
         self.__myToken = AItoken
         self.__oppToken = oppToken
         self.__graph = {}           # holds children in a list
-        self.__data = {}            #[value,isMax,parent,alpha,beta,x,y,token]
+        self.__data = {}            # [value,isMax,parent,alpha,beta,x,y,token, path]
+        self.__matrixState = {}     # holds matrix state at node
         self.__maxDepth = 5         # depth of search space used (must be odd)
         self.__midDepth = 3         # middle prune mark
         self.__nodePtr = 0          # 0 is root, used for naming nodes
@@ -43,10 +44,10 @@ class OthelloAI:
     def __resetValues(self,matrix, moveCount):
         self.abPrune = ABPrune()
         self.__graph = {}           # holds children in a list
-        self.__data = {}            #[value,isMax,parent,alpha,beta,x,y,token]
+        self.__data = {}            #[value,isMax,parent,alpha,beta,x,y,token, path]
         self.__nodePtr = 0          # 0 is root, used for naming nodes
         self.__graph[0] = []
-        self.__data[0] = [-999999,True,"none",-999999,999999,0,0,self.__myToken]
+        self.__data[0] = [-999999,True,"none",-999999,999999,0,0,self.__myToken, []]
         self.__setDepth(matrix, moveCount)
         self.heuristic.setDepth(self.__maxDepth)
 
@@ -58,14 +59,12 @@ class OthelloAI:
             return 999,'C'
 
         self.__resetValues(matrix, moveCount)
-        self.__deepMoveBuilder(self.__nodePtr, 1, copy.deepcopy(matrix),[])
+        self.__deepMoveBuilder(self.__midDepth, self.__nodePtr, 1, copy.deepcopy(matrix),[])
         self.__reorderChildren(0)
 
         if(self.__maxDepth > self.__midDepth):
             self.__pruneMiddle()
-            # after prune we must add more levels accordingly. we current cut off at midDepth
-            # current problem: how to keep track of board states
-            pass
+            #self.__buildToMax(0, 1) # start node, start depth
 
         #self.__printGraph()
         #self.__printData()
@@ -85,10 +84,10 @@ class OthelloAI:
     # recursively builds the graph to be searched. Limited to a depth
     # specified in self.__maxDepth
     # populates self.__graph with children data
-    # populates self.__data with x,y and token: [x,y,token]
-    def __deepMoveBuilder(self,parNode, curDepth, matrix,path):
+    # populates self.__data
+    def __deepMoveBuilder(self,stopDepth, parNode, curDepth, matrix, path):
         # if depth is reached, stop recursion
-        if(self.__midDepth+1 == curDepth):
+        if(stopDepth+1 == curDepth):
             return
 
         # set whose turn it is
@@ -109,10 +108,10 @@ class OthelloAI:
 
                     self.__setDataValues(curToken,curDepth,i,j,copy.deepcopy(nextMatrix),copy.deepcopy(path), parNode)
 
-                    self.__deepMoveBuilder(self.__nodePtr,curDepth+1,nextMatrix,[])
+                    self.__deepMoveBuilder(stopDepth, self.__nodePtr,curDepth+1,nextMatrix,[])
 
 
-    #gets the heuristic value
+    #sets the heuristic value
     def __setDataValues(self, curToken, curDepth, i, j, matrix, path, parent):
         sA = -999999
         sB = 999999
@@ -126,10 +125,11 @@ class OthelloAI:
             value = sA
 
         #if at the max depth of the tree or for reordering the first
-        if(curDepth == self.__maxDepth or curDepth == 1):
+        if(curDepth == self.__maxDepth or curDepth == 1 or curDepth == self.__midDepth):
             value = self.heuristic.calculateValue(matrix,path)
 
-        self.__data[self.__nodePtr] = [value,token,parent,sA,sB,i,j,curToken]
+        self.__data[self.__nodePtr] = [value,token,parent,sA,sB,i,j,curToken, path]
+        self.__matrixState[self.__nodePtr] = copy.deepcopy(matrix)
 
 
     # given a node, reorders its children according to their heuristic value.
@@ -159,12 +159,31 @@ class OthelloAI:
             if node not in visited:
                 del self.__graph[node]
                 del self.__data[node]
+                del self.__matrixState[node]
             else:
                 # remove child references
                 for child in graphCopy[node]:
                     if child not in visited:
                         self.__graph[node].remove(child)
         return
+
+
+    # performs an inorder traversal to visit all leaves.
+    # once at the leaves, calls deepmovebulder to complete the graph to maxDepth.
+    def __buildToMax(self, curNode, curDepth):
+        children = self.__graph[curNode]
+
+        # if at leaf node
+        if(len(children) == 0):
+
+            matrix = self.__matrixState[curNode]
+            path   = self.__data[curNode][8] # full path list
+            self.__deepMoveBuilder(self.__maxDepth, curNode, curDepth, matrix, path)
+
+        else:
+            # recursive call to visit all nodes
+            for child in children:
+                self.__buildToMax(child, curDepth+1)
 
 
     # returns the x and y of the best move as
@@ -198,6 +217,7 @@ class OthelloAI:
         print "Graph: "
         for node in self.__graph:
             print node, self.__graph[node]
+
 
     def __printData(self):
         print "Data: "

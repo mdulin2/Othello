@@ -1,7 +1,7 @@
 '''
 Team Leader: Jacob Krantz
 Developer 1: Max Dulin
-Assignment:  Alpha-Beta pruning (asgn12)
+Assignment:  Othello
 Date:        4/18/17
 
 How to run:
@@ -9,83 +9,23 @@ How to run:
         'python abPrune.py'
     - result
         nodes visited are printed out to console
-
-notation supplement
-    - names for nodes that started with only values:
-        a: 42
-        b: 2
-        c: 3
-        d: 5
-        e: 100
-        f: 0
-        g: 2 (child of T)
-        h: 1
-        i: 9
-        j: 11
 '''
 
 class ABPrune:
 
-    # initialize the graph to De Palma's pruning example
+    # initialize datatypes
     def __init__(self):
         self.__data = {}
         self.__graph = {}
-        #self.initGraph()
         self.__inorderVisit = []
 
-    # set to example 4 of AB Pruning notes
+
+    # populate graph and data to a given state
     def initGraph(self,graphIn,dataIn):
         self.__graph = graphIn
-
-        '''
-        self.__graph = {'C': ['A','D','E'],
-                        'A': ['P','B'],
-                        'D': ['R','a'],
-                        'E': ['T','V'],
-                        'P': ['b','c'],
-                        'B': ['d','e'],
-                        'R': ['f'],
-                        'T': ['g','h'],
-                        'V': ['i','j'],
-                        'a': [],
-                        'b': [],
-                        'c': [],
-                        'd': [],
-                        'e': [],
-                        'f': [],
-                        'g': [],
-                        'h': [],
-                        'i': [],
-                        'j': []}
-        '''
-
         self.__data = dataIn
-        '''
-        sA = -999999
-        sB = 999999
-        # {node name: node data}
-        # node data = [value, isMax, parentChar, alpha, beta]
-        self.__data =  {'C': [sA,  True, "none", sA, sB],
-                        'A': [sB,  False, 'C', sA, sB],
-                        'D': [sB,  False, 'C', sA, sB],
-                        'E': [sB,  False, 'C', sA, sB],
-                        'P': [sA,  True,  'A', sA, sB],
-                        'B': [sA,  True,  'A', sA, sB],
-                        'R': [sA,  True,  'D', sA, sB],
-                        'T': [sA,  True,  'E', sA, sB],
-                        'V': [sA,  True,  'E', sA, sB],
-                        'a': [42,  True,  'D', sA, sB],
-                        'b': [2,   False, 'P', sA, sB],
-                        'c': [3,   False, 'P', sA, sB],
-                        'd': [5,   False, 'B', sA, sB],
-                        'e': [100, False, 'B', sA, sB],
-                        'f': [0,   False, 'R', sA, sB],
-                        'g': [2,   False, 'T', sA, sB],
-                        'h': [1,   False, 'T', sA, sB],
-                        'i': [9,   False, 'V', sA, sB],
-                        'j': [11,  False, 'V', sA, sB]}
-        '''
-        
+
+
     #node data = [value, isMax, parentChar, alpha, beta,x,y,token]
     # performs a depth-first traversal and returns the visited list
     # start is the node name to start with
@@ -125,7 +65,7 @@ class ABPrune:
                 if parBeta > nodeValue:
                     self.__data[par][0] = nodeValue # set par value
                     self.__data[par][4] = nodeValue # set par beta
-                   
+
                     self.__data[par][5] = x
                     self.__data[par][6] = y
 
@@ -182,15 +122,7 @@ class ABPrune:
 
         return self.__inorderVisit
 
-
-    def checkValue(self, node):
-        return self.__data[node][0]
-
-    #after the spanning of the tree has been done this returns the best x and y value to 
+    #after the spanning of the tree has been done this returns the best x and y value to
     #place on the board
     def getBestPlace(self):
         return self.__data[0][5],self.__data[0][6]
-
-if(__name__ == "__main__"):
-    test = ABPrune()
-    print test.minimax('C')
