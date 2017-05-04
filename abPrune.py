@@ -69,6 +69,7 @@ class ABPrune:
                     self.__data[par][5] = x
                     self.__data[par][6] = y
 
+
             else: # is min
                 if parAlpha < nodeValue:
                     self.__data[par][0] = nodeValue # set par value
@@ -81,11 +82,8 @@ class ABPrune:
             # visit left first
             self.minimax(children[0])
 
-
             # visit itself
             self.__inorderVisit.append(start)
-            #print "in node " + start, "value: ", self.__data[start][0], "beta: ", self.__data[start][4]
-
 
             # visit all the rest if not pruned
             if len(children) > 1:
@@ -113,6 +111,7 @@ class ABPrune:
                         self.__data[par][5] = x
                         self.__data[par][6] = y
 
+
                 else: # is min
                     if parAlpha < nodeValue:
                         self.__data[par][0] = nodeValue # set par value
@@ -121,6 +120,7 @@ class ABPrune:
                         self.__data[par][6] = y
 
         return self.__inorderVisit
+
 
     #after the spanning of the tree has been done this returns the best x and y value to
     #place on the board

@@ -502,19 +502,15 @@ class Heuristic:
             if(matrix[1][1] == self.__myToken and len(path) == self.__depth+1):
                 #if not in path then just this flip is good; it will flip others around it
                 if([1,1] in path and [i,j] in path):
-                    print "Going down the path?"
                     #if contains the Xsquare as a prediction, then don't use it
                     #or if that's the move choosen
                     if(path.index([1,1]) < path.index([i,j])):
-                        print "Going through the path", path.index([1,1]),path.index([i,j])
                         return True
                     else:
-                        print "the path is bad! Go away!"
                         return False
                 #if the matrix has the corner but doesn't have the other pieces in the path.
                 #Good
                 else:
-                    print "returning true from the miss at the wrong time?"
                     return True
             else:
                 return False

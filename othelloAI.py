@@ -64,7 +64,7 @@ class OthelloAI:
 
         if(self.__maxDepth > self.__midDepth):
             self.__pruneMiddle()
-            #self.__buildToMax(0, 1) # start node, start depth
+            self.__buildToMax(0, 1) # start node, start depth
 
         #self.__printGraph()
         #self.__printData()
@@ -75,7 +75,13 @@ class OthelloAI:
     # Set max tree depth, based on the amount of moves on the board.
     # moveCount: number of moves available to the AI
     def __setDepth(self,matrix, moveCount):
-        if(moveCount >= 9):
+        movesToGo = 0
+        for i in range(1,9):
+            for j in range(1,9):
+                if matrix[i][j] == '-':
+                    movesToGo += 1
+
+        if(moveCount >= 9 or movesToGo < 5):
             self.__maxDepth = 3
         else:
             self.__maxDepth = 5
@@ -150,9 +156,11 @@ class OthelloAI:
 
     # at the mid point of graph building, prune bad paths.
     def __pruneMiddle(self):
-        self.abPrune.initGraph(self.__graph,self.__data)
+        self.abPrune = ABPrune()
+        self.abPrune.initGraph(copy.deepcopy(self.__graph),copy.deepcopy(self.__data))
         visited = []
         visited = self.abPrune.minimax(0)
+        self.abPrune.getBestPlace()
 
         graphCopy = copy.deepcopy(self.__graph)
         for node in graphCopy:
@@ -189,9 +197,8 @@ class OthelloAI:
     # returns the x and y of the best move as
     # searched by abPrune
     def __getBestMove(self):
-        self.abPrune.initGraph(self.__graph,self.__data)
+        self.abPrune.initGraph(copy.deepcopy(self.__graph),copy.deepcopy(self.__data))
         visited = self.abPrune.minimax(0)
-        # print "visited: ", visited
         return self.abPrune.getBestPlace()
 
 
@@ -210,7 +217,7 @@ class OthelloAI:
 
     # convert Y into its proper board form (character)
     def __changeY(self,y):
-        return chr(y + 64)
+        return chr(int(y) + 64)
 
 
     def __printGraph(self):
