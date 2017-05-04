@@ -226,29 +226,27 @@ class Board:
         '''
         if(config == 'W'):
 
-            for i in range(8):
+            for i in range(7):
                 for j in range(8):
                     tmp = rand.randint(0,2)
                     if(tmp == 2):
-                        self.matrixB[i+1,j+1] = 'B'
+                        self.matrixB[i+1][j+1] = 'B'
                     else:
-                        self.matrixB[i+1,j+1] = 'W'
+                        self.matrixB[i+1][j+1] = 'W'
 
 
-            self.matrixB[1,1] = '-'
-            self.matrixB[2,1] = '-'
-            self.matrixB[7,6] = '-'
-            self.matrixB[5,7] = '-'
+            self.matrixB[7][1] = '-'
+            self.matrixB[7][7] = '-'
+            self.matrixB[7][8] = '-'
+            self.matrixB[5][6] = '-'
 
-            self.matrixB[8,4] = 'B'
-            self.matrixB[8,3] = 'W'
             #self.matrixB[8,2] = 'B'
 
 
             #self.matrixB[1,3] = 'W'
             #self.matrixB[1,4] = 'B'
             #self.matrixB[2,1] = 'B'
-            '''
+        '''
         if(config == 'W'):
             self.matrixB[4][5] = 'B'
             self.matrixB[4][4] = 'W'
@@ -256,12 +254,13 @@ class Board:
             self.matrixB[5][5] = 'W'
 
 
-
-            #self.matrixB[7,8] = 'B'
-            #self.matrixB[1,4] = 'B'
-            #self.matrixB[2,1] = 'B'
-            #self.matrixB[1,8] = 'B'
-
+            '''
+            self.matrixB[8][6] = 'W'
+            self.matrixB[8][5] = 'B'
+            self.matrixB[8][4] = 'B'
+            self.matrixB[8][3] = 'B'
+            self.matrixB[7][2] = '-'
+            '''
         elif(config == 'B'):
             self.matrixB[4][5] = 'W'
             self.matrixB[4][4] = 'B'
