@@ -1,7 +1,12 @@
 from GrabSides import GrabSides
 
+#################
+#Needs some major work done to it!!!
+#Playing on wedges, giving up corners is terrible.
+#This needs to be much better
+##################
+
 #This calculates the values of being on specific spots on the board
-#getScore should
 class PositionH:
 
     def __init__(self,myToken,oppToken,positionScore):
@@ -31,7 +36,7 @@ class PositionH:
         total += self.__cornerH(matrix)
         myX,oppX = self.__XsqaureH(matrix)
         total+= myX and oppX
-        total+= (self.__WedgeSquareH(matrix))*100
+        total+= (self.__WedgeSquareH(matrix)*1000)
         total*=15
         return total
 
@@ -57,17 +62,25 @@ class PositionH:
                     if (value > 90):
                         totalScore += 4000
                     elif(self.__isViable(path,i,j,matrix)):
-                        totalScore += 100
+                        totalScore += 1000
+                    elif(self.__isWedgeSquare(matrix,self.__myToken)):
+                        totalScore = totalScore - 10000
+
                     elif(value < 11):
                         #need to really hate on this
-                        totalScore = totalScore -1000
+                        totalScore = totalScore -3000
+
                     else:
                         totalScore+=value
+                elif(matrix[i][j] == self.__oppToken):
+                    if(matrix[1][1] or matrix[1][8] or matrix[8][1] or matrix[8][8]):
+                        totalScore = totalScore - 100000000
+
 
         #this could be better, for sure. Might just move it into the GrabSides file
         value,countX = self.GrabSides.RunCheck(matrix)
-        #if(value > 0):
-            #totalScore +=3000
+        if(value > 0):
+            totalScore +=3000
         normalized = totalScore
         return normalized,count
 
@@ -80,13 +93,13 @@ class PositionH:
         elif(myScore == oppScore and myScore == 0):
             return 0
         elif(myScore == 0 and oppScore == 1):
-            return -100
+            return -1000
         elif(myScore == 0 and oppScore == 2):
-            return -200
+            return -2000
         elif(myScore == 0 and oppScore == 3):
-            return -300
+            return -3000
         elif(oppScore == 4):
-            return -400
+            return -4000
         elif(myScore == 1 and oppScore == 0):
             return 40
         elif(myScore == 1 and oppScore == 1):
@@ -239,6 +252,23 @@ class PositionH:
                 count+=1
         return count
 
+    def __isWedgeSquare(self,matrix,Token):
+        if(matrix[1][1] != Token):
+            if(matrix[2][2] == Token):
+                return True
+
+        if(matrix[1][8] != Token):
+            if(matrix[2][7] == Token):
+                return True
+
+        if(matrix[8][1] != Token):
+            if(matrix[7][2] == Token):
+                return True
+
+        if(matrix[8][8] != Token):
+            if(matrix[8][7] == Token):
+                return True
+        return False
     #gets the number of bad plays on the board; spots around the corner when
     # a corner move has not been played
     #might want to base this off of the first board state of the iteration
