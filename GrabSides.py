@@ -22,11 +22,11 @@ class GrabSides:
         self.__oppToken = oppToken
 
     #The upper call for all of the functions. Gets the scoring scenarios
-    def RunCheck(self,matrix):
+    def RunCheck(self,matrix,player):
         score = 0
         count = 0
         if(matrix[1][3] != '-' or matrix[1][6] != '-'):
-            score = self.__moveUpTop(matrix,0)
+            score = self.__moveUpTop(matrix,0,player)
             if(score > 0):
                 count+=1
             topLeftScore = self.__moveUpTop(matrix,1)

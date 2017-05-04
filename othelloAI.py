@@ -19,7 +19,7 @@ class OthelloAI:
         self.__data = {}            # [value,isMax,parent,alpha,beta,x,y,token, path]
         self.__matrixState = {}     # holds matrix state at node
         self.__maxDepth = 5         # depth of search space used (must be odd)
-        self.__midDepth = 3         # middle prune mark
+        self.__midDepth =3         # middle prune mark
         self.__nodePtr = 0          # 0 is root, used for naming nodes
 
 
@@ -62,7 +62,7 @@ class OthelloAI:
         self.__resetValues(matrix, moveCount)
         self.__deepMoveBuilder(self.__midDepth, self.__nodePtr, 1, copy.deepcopy(matrix),[])
         self.__reorderChildren(0)
-
+        
         if(self.__maxDepth > self.__midDepth):
             self.__pruneMiddle()
             self.__buildToMax(0, 1) # start node, start depth

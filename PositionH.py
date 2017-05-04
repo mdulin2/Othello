@@ -22,12 +22,12 @@ class PositionH:
 
     #returns the position function score
     def getScore(self,matrix,path):
-        PositionScore,chips = self.__getPositionFactor(matrix,path)
-        altScore = self.alterations(matrix)
-        if(altScore > 0):
-            finalScore = PositionScore * altScore / float(chips * 44.675 * 4)
-        else:
-            finalScore = PositionScore /float(chips *1000)
+        myTotalScore,oppTotalScore,myChips,oppChips = self.__getPositionFactor(matrix,path)
+        #altScore = self.alterations(matrix)
+        myTotalScore =  myTotalScore / float(myChips * 44.675 * 4)
+        oppTotalScore = oppTotalScore / float(oppChips * 44.675)
+        finalScore = (myTotalScore / float(oppTotalScore))
+        finalScore / (float(15))
         return finalScore
 
     #Gets the information about playing the corners poorly
@@ -49,40 +49,52 @@ class PositionH:
     # position factor judges the position the AI is in. Analyzes
     # corners, edges. How to judge against bad spaces? Cannot get this to work the way I want!
     def __getPositionFactor(self, matrix,path):
-        totalScore = 0
-        count = 0
+        myTotalScore = 0
+        oppTotalScore = 0
+        myCount = 0
+        oppCount = 1
         turnCount = self.__getMovedPlayed(matrix)
         for i in range(1,9):
             for j in range(1,9):
-                #self.__positionHelper(matrix,i,j)
                 if(matrix[i][j] == self.__myToken):
-                    count+=1
                     value = self.__positionScores[i-1][j-1]
-
+                    myCount+=1
                     if (value > 90):
-                        totalScore += 4000
+                        myTotalScore += 600
+                    #might need to alter this in order to check if the rest is okay
                     elif(self.__isViable(path,i,j,matrix)):
-                        totalScore += 1000
-                    elif(self.__isWedgeSquare(matrix,self.__myToken)):
-                        totalScore = totalScore - 10000
-
+                        myTotalScore += 200
+                    elif(self.__isWedgeSquare(i,j,matrix,self.__myToken)):
+                        #print "wedge at", i,j
+                        myTotalScore = myTotalScore -800
                     elif(value < 11):
                         #need to really hate on this
-                        totalScore = totalScore -3000
-
+                        myTotalScore = myTotalScore - 200
                     else:
-                        totalScore+=value
+                        myTotalScore+=value
+
                 elif(matrix[i][j] == self.__oppToken):
-                    if(matrix[1][1] or matrix[1][8] or matrix[8][1] or matrix[8][8]):
-                        totalScore = totalScore - 100000000
-
-
+                    value = self.__positionScores[i-1][j-1]
+                    oppCount +=1
+                    if (value > 90):
+                        oppTotalScore += 800
+                    elif(self.__isViable(path,i,j,matrix)):
+                        oppTotalScore += 300
+                    elif(self.__isWedgeSquare(i,j,matrix,self.__myToken)):
+                        oppTotalScore = oppTotalScore - 200
+                    #elif not sure if I want to check for the Xsquares or not
+                    else:
+                        oppTotalScore+=value
+        if(oppTotalScore <= 0):
+            oppTotalScore = 1
+        #print oppCount
         #this could be better, for sure. Might just move it into the GrabSides file
-        value,countX = self.GrabSides.RunCheck(matrix)
-        if(value > 0):
-            totalScore +=3000
-        normalized = totalScore
-        return normalized,count
+        #countX = self.GrabSides.RunCheck(matrix)
+        #if(value > 0):
+            #totalScore +=3000
+
+
+        return myTotalScore,oppTotalScore,myCount,oppCount
 
     #Discusses how many corners have been grabbed by each player;
     #The heuristic got the corner; need to make strict
@@ -252,22 +264,24 @@ class PositionH:
                 count+=1
         return count
 
-    def __isWedgeSquare(self,matrix,Token):
-        if(matrix[1][1] != Token):
-            if(matrix[2][2] == Token):
-                return True
-
-        if(matrix[1][8] != Token):
-            if(matrix[2][7] == Token):
-                return True
-
-        if(matrix[8][1] != Token):
-            if(matrix[7][2] == Token):
-                return True
-
-        if(matrix[8][8] != Token):
-            if(matrix[8][7] == Token):
-                return True
+    #Gets if the current play is a wedge move
+    def __isWedgeSquare(self,i,j,matrix,Token):
+        if(i == 2 and j == 2):
+            if(matrix[1][1] != Token):
+                if(matrix[2][2] == Token):
+                    return True
+        elif(i == 2 and j == 7):
+            if(matrix[1][8] != Token):
+                if(matrix[2][7] == Token):
+                    return True
+        elif(i == 7 and j == 2):
+            if(matrix[8][1] != Token):
+                if(matrix[7][2] == Token):
+                    return True
+        elif(i == 7 and j == 7 ):
+            if(matrix[8][8] != Token):
+                if(matrix[7][7] == Token):
+                    return True
         return False
     #gets the number of bad plays on the board; spots around the corner when
     # a corner move has not been played
