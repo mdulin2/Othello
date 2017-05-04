@@ -54,6 +54,7 @@ class OthelloAI:
 
     # performs a move using minimax and alpha beta pruning
     def __deepMove(self, matrix):
+        self.printMoves(matrix,self.__myToken)
         moveCount = self.rules.getMoveCount(matrix,self.__myToken)
         if(moveCount == 0):
             return 999,'C'

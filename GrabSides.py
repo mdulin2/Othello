@@ -30,7 +30,7 @@ class GrabSides:
     #PRIVATE
     #################
 
-    
+
     #The game needs to capitalize on a few scenarios. Needs to be hard coded!
     def __moveUpTop(self,matrix,sectionType):
         count = 0
@@ -135,7 +135,7 @@ class GrabSides:
                 #might need to add more stuff here after a while for cases with the
                 #the pieces on the edges
         #right to left
-        if(matrix[8][8] == '-'  and sectionType == 1):
+        if(matrix[8][8] == '-' and sectionType == 1):
 
             if(matrix[8][6] == self.__myToken):
                 for i in range(6,0,-1):

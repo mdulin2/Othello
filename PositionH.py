@@ -17,20 +17,25 @@ class PositionH:
 
     #returns the position function score
     def getScore(self,matrix,path):
-        turnCount = self.__getMovedPlayed(matrix)
-        PositionScore = self.__getPositionFactor(matrix,path)
+        PositionScore,chips = self.__getPositionFactor(matrix,path)
         altScore = self.alterations(matrix)
         if(altScore > 0):
-            finalScore = PositionScore / float(turnCount * 44.675 * 4)
+            finalScore = PositionScore * altScore / float(chips * 44.675 * 4)
         else:
-            finalScore = PositionScore /float(turnCount *1000)
+            finalScore = PositionScore /float(chips *1000)
         return finalScore
 
-
+    #Gets the information about playing the corners poorly
     def alterations(self,matrix):
-        spotsScore = self.__cornerH(matrix)
+        total = 0
+        total += self.__cornerH(matrix)
+        myX,oppX = self.__XsqaureH(matrix)
+        total+= myX and oppX
+        total+= self.__WedgeSquareH(matrix)
+        total*=15
+        return total
 
-        return spotsScore
+
     ######################
     #PRIVATE
     ######################
@@ -61,57 +66,43 @@ class PositionH:
 
         #this could be better, for sure. Might just move it into the GrabSides file
         value,countX = self.GrabSides.RunCheck(matrix)
-        if(value > 0 and countX <= count):
-            totalScore += countX *1000
+        if(value > 0):
+            totalScore +=3000
         normalized = totalScore
-        #this could be more precise(wedgesquares and Xsquare).
-        #if(self.countWedgeSquares(matrix, self.__oppToken) > self.countWedgeSquares(matrix,self.__myToken)):
-            #totalScore += 500
-
-        #if(self.XSquareCount(matrix,self.__oppToken) > self.XSquareCount(matrix,self.__myToken)):
-            #totalScore += 300
-
-        #if(totalScore <= 0):
-            #normalized = 1 / float(44.6875 * turnCount * 10000)
-        #else:
-            #normalized = totalScore*8 / float(44.6875 * count * 5)
-
-            #print totalScore
-            #print normalized
-        return normalized
+        return normalized,count
 
     #Discusses how many corners have been grabbed by each player;
     #The heuristic got the corner; need to make strict
     def __cornerH(self,matrix):
         myScore, oppScore = self.__getCorners(matrix)
         if(myScore == 4):
-            return 12
-        elif(myScore == oppScore and myScore == 0 ):
+            return 100
+        elif(myScore == oppScore and myScore == 0):
             return 0
         elif(myScore == 0 and oppScore == 1):
-            return -5
+            return -40
         elif(myScore == 0 and oppScore == 2):
-            return -8
+            return -50
         elif(myScore == 0 and oppScore == 3):
-            return -12
+            return -80
         elif(oppScore == 4):
-            return -15
+            return -120
         elif(myScore == 1 and oppScore == 0):
-            return 3
+            return 40
         elif(myScore == 1 and oppScore == 1):
-            return -2
+            return -40
         elif(myScore == 1 and oppScore == 2):
-            return -5
+            return -70
         elif(myScore == 1 and oppScore == 3):
-            return -10
+            return -50
         elif(myScore == 2 and oppScore == 0):
-            return 8
+            return 50
         elif(myScore == 2 and oppScore == 1):
-            return 3
-        elif(myScore == 2 and oppScore == 2):
-            return -2
-        elif(myScore == 3 and oppScore == 1):
             return 10
+        elif(myScore == 2 and oppScore == 2):
+            return -30
+        elif(myScore == 3 and oppScore == 1):
+            return 80
         else:
             return 0
             print "What else is there?", myScore,oppScore
@@ -120,8 +111,12 @@ class PositionH:
     #Gets the heuristic value of the other player and current player
     #having bad squares during the game
     def __XsqaureH(self,matrix):
-        myScore = self.__XsqaureH(matrix,self.__myToken)
-        oppWedge = self.__XsqaureH(matrix,self.__oppToken)
+        myScore = self.__XSquareCount(matrix,self.__myToken)
+        oppScore = self.__XSquareCount(matrix,self.__oppToken)
+        myScore = 12 / float(myScore + 1)
+        oppScore = (oppScore / float(12)) * 4
+
+        return myScore,oppScore
 
 
     #The heuristic for the worst square in the game!
@@ -129,6 +124,41 @@ class PositionH:
     def __WedgeSquareH(self,matrix):
         myWedge = self.__countWedgeSquares(matrix,self.__myToken)
         oppWedge = self.__countWedgeSquares(matrix,self.__oppToken)
+        if(myWedge == 0 and oppWedge == 0):
+            return 0
+        elif(myWedge == 0 and oppWedge == 1):
+            return 10
+        elif(myWedge == 0 and oppWedge == 2):
+            return 20
+        elif(myWedge == 0 and oppWedge == 3):
+            return 30
+        elif(myWedge == 0 and oppWedge == 4):
+            return 40
+        elif(myWedge == 1 and oppWedge == 0):
+            return -40
+        elif(myWedge == 1 and oppWedge == 1):
+            return -50
+        elif(myWedge == 1 and oppWedge == 2):
+            return -30
+        elif(myWedge == 1 and oppWedge == 3):
+            return 10
+        elif(myWedge == 2 and oppWedge == 0):
+            return -70
+        elif(myWedge == 2 and oppWedge == 1):
+            return -50
+        elif(myWedge == 2 and oppWedge == 2):
+            return -30
+        elif(myWedge == 3 and oppWedge == 0):
+            return -100
+        elif(myWedge == 3 and oppWedge == 1):
+            return -80
+        elif(myWedge == 4):
+            return -120
+        elif(oppWedge == 4):
+            return 60
+        else:
+            print "What else is here?", myWedge,oppWedge
+            return 0
 
     #marks whether a move is viable based on the standards of having a corner played already
     def __isViable(self,path,i,j,matrix):

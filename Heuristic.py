@@ -125,7 +125,7 @@ class Heuristic:
         mobilityVal = mobilityVal *.20
         posVal = posVal * .1
         chipCount = chipCount * .5
-        score = chipCount * mobilityVal
+        score = chipCount * mobilityVal * posVal
         return score
 
     #sets the depth of the heuristic
