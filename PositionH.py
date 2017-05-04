@@ -31,7 +31,7 @@ class PositionH:
         total += self.__cornerH(matrix)
         myX,oppX = self.__XsqaureH(matrix)
         total+= myX and oppX
-        total+= self.__WedgeSquareH(matrix)
+        total+= (self.__WedgeSquareH(matrix))*100
         total*=15
         return total
 
@@ -55,7 +55,7 @@ class PositionH:
                     value = self.__positionScores[i-1][j-1]
 
                     if (value > 90):
-                        totalScore += 1050
+                        totalScore += 4000
                     elif(self.__isViable(path,i,j,matrix)):
                         totalScore += 100
                     elif(value < 11):
@@ -66,8 +66,8 @@ class PositionH:
 
         #this could be better, for sure. Might just move it into the GrabSides file
         value,countX = self.GrabSides.RunCheck(matrix)
-        if(value > 0):
-            totalScore +=3000
+        #if(value > 0):
+            #totalScore +=3000
         normalized = totalScore
         return normalized,count
 
@@ -80,13 +80,13 @@ class PositionH:
         elif(myScore == oppScore and myScore == 0):
             return 0
         elif(myScore == 0 and oppScore == 1):
-            return -40
+            return -100
         elif(myScore == 0 and oppScore == 2):
-            return -50
+            return -200
         elif(myScore == 0 and oppScore == 3):
-            return -80
+            return -300
         elif(oppScore == 4):
-            return -120
+            return -400
         elif(myScore == 1 and oppScore == 0):
             return 40
         elif(myScore == 1 and oppScore == 1):

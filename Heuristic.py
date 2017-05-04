@@ -7,17 +7,20 @@ from MobilityH import MobilityH
 from StabilityH import StabilityH
 '''
 Filename:   Heuristic.py
-Authors:    Jacob Krantz, Max Dulin
+Authors:    Max Dulin,Jacob Krantz
 Date:       4/26/17
 Description:
     calculates the value of a board state for a player of Othello.
     Initialized with the token to be analyzed for and called by
     function 'calculateValue'.
 Heuristic factors:
-- evaporation
 - chip ratio
 - mobility
 - position
+- stability
+- particular cases
+- corners
+- Xsquares and Wedges
 '''
 
 class Heuristic:
@@ -62,7 +65,6 @@ class Heuristic:
         if(movesPlayed < 17):
             stabVal = 1 # don't think i need this here
             posVal = 1
-
             mobilityVal = 1
             posVal = self.PositionH.getScore(copy.deepcopy(matrix),path)
             mobilityVal = self.MobilityH.getScore(copy.deepcopy(matrix))
@@ -83,8 +85,6 @@ class Heuristic:
             mobilityVal = self.MobilityH.getScore(copy.deepcopy(matrix))
             posVal = self.PositionH.getScore(copy.deepcopy(matrix),path)
             score = self.__getWeightStage3(stabVal,mobilityVal,posVal,chipCount)
-            #score *= self.__getPositionFactor(copy.deepcopy(matrix))
-            #score = self.__getUserStability(copy.deepcopy(matrix))
         #print '%.25f' % score
         return score
 
