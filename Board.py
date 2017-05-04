@@ -41,12 +41,12 @@ class ScoreBoard:
     def displayScore(self):
         print "----ScoreBoard----"
         if(self.player == 'W'):
-            print ("Player Score: " + str(self.whiteScore))
-            print ("AI Score: " + str(self.blackScore))
+            print ("White Score: " + str(self.whiteScore))
+            print ("Black Score: " + str(self.blackScore))
             print "------------------"
         else:
-            print ("Player Score: " + str(self.blackScore))
-            print ("AI Score: " + str(self.whiteScore))
+            print ("Black Score: " + str(self.blackScore))
+            print ("White Score: " + str(self.whiteScore))
             print "------------------"
 
 class Board:

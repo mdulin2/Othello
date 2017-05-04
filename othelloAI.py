@@ -26,8 +26,11 @@ class OthelloAI:
     # pulls the matrix from board and chooses a move to make.
     # returns chosen move as an integer X and a char Y.
     def makeMove(self, board):
-        #x,y = self.__simpleMove(board.matrixB)
         x,y = self.__deepMove(board.matrixB)
+        if(y == '@'):
+            print "@ return, correcting..."
+            x,y = self.__simpleMove(board.matrixB)
+
         return x, self.__changeY(y)
 
     #prints all of the possible move for the turn
@@ -49,7 +52,14 @@ class OthelloAI:
         self.__graph[0] = []
         self.__data[0] = [-999999,True,"none",-999999,999999,0,0,self.__myToken, []]
         self.__setDepth(matrix, moveCount)
-        self.heuristic.setDepth(self.__maxDepth)
+        if self.__maxDepth < self.__midDepth:
+            stopDepth = self.__maxDepth
+        else:
+            stopDepth = self.__midDepth
+        print "max Depth:", self.__maxDepth
+        print "stop Depth:", stopDepth
+        self.heuristic.setDepth(stopDepth)
+        return stopDepth
 
 
     # performs a move using minimax and alpha beta pruning
@@ -59,8 +69,8 @@ class OthelloAI:
         if(moveCount == 0):
             return 999,'C'
 
-        self.__resetValues(matrix, moveCount)
-        self.__deepMoveBuilder(self.__midDepth, self.__nodePtr, 1, copy.deepcopy(matrix),[])
+        stopDepth = self.__resetValues(matrix, moveCount)
+        self.__deepMoveBuilder(stopDepth, self.__nodePtr, 1, copy.deepcopy(matrix),[])
         self.__reorderChildren(0)
         
         if(self.__maxDepth > self.__midDepth):
@@ -86,6 +96,9 @@ class OthelloAI:
             self.__maxDepth = 3
         else:
             self.__maxDepth = 5
+
+        if movesToGo < self.__maxDepth:
+            self.__maxDepth = movesToGo
 
 
     # recursively builds the graph to be searched. Limited to a depth
@@ -202,6 +215,13 @@ class OthelloAI:
         visited = self.abPrune.minimax(0)
         return self.abPrune.getBestPlace()
 
+
+    # call this to look at and judge only a single turn
+    def __quickMove(self, move):
+        # get possible moves
+        # score each
+        # return best option
+        pass
 
     # loops through the matrix and picks the first move that is available.
     # ran with : 'x,y = self.__simpleMove(matrix)'
