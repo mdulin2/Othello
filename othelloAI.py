@@ -32,8 +32,8 @@ class OthelloAI:
         isLegal = self.rules.isLegalMove(x, y, board.matrixB, self.__myToken)
 
         if(y < 1 or y > 8 or not isLegal):
-            print "X,Y:",x,y,"return, correcting..."
-            x,y = self.__simpleMove(board.matrixB)
+            print "X,Y:",x,y,". Playing quick move."
+            x,y = self.__quickMove(board.matrixB)
 
         return x, self.__changeY(y)
 
@@ -61,9 +61,8 @@ class OthelloAI:
             stopDepth = self.__maxDepth
         else:
             stopDepth = self.__midDepth
-        print "max Depth:", self.__maxDepth
-        print "stop Depth:", stopDepth
         self.heuristic.setDepth(stopDepth)
+
         return stopDepth
 
 
@@ -222,11 +221,29 @@ class OthelloAI:
 
 
     # call this to look at and judge only a single turn
-    def __quickMove(self, move):
-        # get possible moves
-        # score each
-        # return best option
-        pass
+    def __quickMove(self, matrix):
+        moveLst = []
+
+        for i in range(1,9):
+            for j in range(1,9):
+                if(self.rules.isLegalMove(i, j, matrix, self.__myToken)):
+                    nextMatrix = self.rules.insertMove(self.__myToken, copy.deepcopy(matrix), i, j)
+                    value = self.heuristic.calculateValue(nextMatrix,[i,j])
+                    moveLst.append((i,j,value))
+
+        if(len(moveLst) > 0):
+            x = moveLst[0][0]
+            y = moveLst[0][1]
+            val = moveLst[0][2]
+            for move in moveLst:
+                if move[2] > val:
+                    x = move[0]
+                    y = move[1]
+                    val = move[2]
+            return x,y
+        else:
+            return 999,'oh boy'
+
 
     # loops through the matrix and picks the first move that is available.
     # ran with : 'x,y = self.__simpleMove(matrix)'
