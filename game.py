@@ -72,7 +72,7 @@ class Game:
         while(not self.__validSetPlayers(player)):
             player = raw_input("Choose token for Player (W/B): ")
 
-            self.__player = player
+            self.__player = player.upper()
             if(player == 'W' or player == 'w'):
                 print("Player set to be: 'W'")
                 self.__AItoken = 'B'
@@ -99,7 +99,7 @@ class Game:
             self.board.getLegalMoves()
             try:
                 x = int(raw_input("Enter number: "))
-                y = str(raw_input("Enter character: "))
+                y = str(raw_input("Enter character: ")).upper()
 
                 if(x > 8):
                     x = 999 # code for no moves
