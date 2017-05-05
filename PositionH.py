@@ -60,16 +60,15 @@ class PositionH:
                     value = self.__positionScores[i-1][j-1]
                     myCount+=1
                     if (value > 90):
-                        myTotalScore += 600
+                        myTotalScore += 8000
                     #might need to alter this in order to check if the rest is okay
                     elif(self.__isViable(path,i,j,matrix)):
                         myTotalScore += 200
                     elif(self.__isWedgeSquare(i,j,matrix,self.__myToken)):
-                        #print "wedge at", i,j
-                        myTotalScore = myTotalScore -800
+                        myTotalScore = myTotalScore -8000
                     elif(value < 11):
                         #need to really hate on this
-                        myTotalScore = myTotalScore - 200
+                        myTotalScore = myTotalScore - 400
                     else:
                         myTotalScore+=value
 
@@ -77,9 +76,12 @@ class PositionH:
                     value = self.__positionScores[i-1][j-1]
                     oppCount +=1
                     if (value > 90):
-                        oppTotalScore += 800
+                        oppTotalScore += 100000
                     elif(self.__isViable(path,i,j,matrix)):
                         oppTotalScore += 300
+                    elif(value <= 11):
+                        #don't want them on the X squares for position reasons
+                        oppTotalScore += 500
                     elif(self.__isWedgeSquare(i,j,matrix,self.__myToken)):
                         oppTotalScore = oppTotalScore - 200
                     #elif not sure if I want to check for the Xsquares or not
@@ -89,12 +91,12 @@ class PositionH:
             oppTotalScore = 1
         #print oppCount
         #this could be better, for sure. Might just move it into the GrabSides file
-        value,countX = self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken)
-        if(value > 0):
-            myTotalScore +=2000
-        value = self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken)
-        if(value > 0):
-            oppTotalScore+= 3000
+        #value,countX = self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken)
+        #if(value > 0):
+            #myTotalScore +=2000
+        #value = self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken)
+        #if(value > 0):
+            #oppTotalScore+= 3000
 
 
         return myTotalScore,oppTotalScore,myCount,oppCount
@@ -324,7 +326,32 @@ class PositionH:
                 count+=1
         return count
 
+    #return true if the value is just outside the corner on the sides
+    #return false otherwise
+    def __isXSquare(self,matrix,token):
+        if(matrix[1][1] != Token):
+            if(matrix[1][2] == Token):
+                return True
+            if(matrix[2][1] == Token):
+                return True
+        if(matrix[1][8] != Token):
+            if(matrix[1][7] == Token):
+                return True
+            if(matrix[2][8] == Token):
+                return True
 
+        if(matrix[8][1] != Token):
+            if(matrix[7][1] == Token):
+                return True
+            if(matrix[8][2] == Token):
+                return True
+
+        if(matrix[8][8] != Token):
+            if(matrix[7][8] == Token):
+                return True
+            if(matrix[8][7] == Token):
+                return True
+        return False
     # counts all played turns on the board by looking for occupied spaces.
     def __getMovedPlayed(self, matrix):
         movesPlayed = 0

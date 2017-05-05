@@ -32,13 +32,13 @@ class Heuristic:
         self.__myToken   = myToken
         self.__depth = 3
 
-        self.__positionScores   = [ [ 95,10,65,60,60,65,10,95],
-                                    [10,10,45,45,45,45,10,10],
+        self.__positionScores   = [[95,10,65,60,60,65,10,95],
+                                    [10,12,45,45,45,45,12,10],
                                     [65,40,70,50,50,70,40,65],
                                     [60,40,40,40,40,40,40,60],
                                     [60,40,40,40,40,40,40,60],
                                     [65,40,70,50,50,70,40,65],
-                                    [10,10,45,45,45,45,10,10],
+                                    [10,12,45,45,45,45,12,10],
                                     [95,10,65,60,60,65,10,95]]
         self.PositionH = PositionH(myToken,oppToken,self.__positionScores)
         self.MobilityH = MobilityH(myToken,oppToken)
@@ -114,7 +114,7 @@ class Heuristic:
     #Would give the weights for each of the values for stage 2
     def __getWeightStage2(self,stabVal,mobilityVal,posVal):
         stabVal = stabVal * .30
-        mobilityVal = mobilityVal *.40
+        mobilityVal = mobilityVal *.70
         posVal = posVal * .30
         score = stabVal * mobilityVal * posVal
         return score
@@ -139,11 +139,15 @@ class Heuristic:
     # returns the ratio of chips on the board that are myToken.
     def __getChipRatio(self, movesPlayed, matrix):
         myCount = 0
+        oppCount = 0
         for i in range(0,9):
             for j in range(1,9):
                 if(matrix[i][j] == self.__myToken):
                     myCount += 1
-        return myCount / float(movesPlayed)
+                elif(matrix[i][j] == self.__oppToken):
+                    oppCount+=1
+
+        return (myCount/float(oppCount)) / float(movesPlayed)
 
 
     # inverse of chip ratio: at beginning of game, give away

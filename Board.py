@@ -261,6 +261,7 @@ class Board:
             self.matrixB[8][3] = 'B'
             self.matrixB[7][2] = 'B'
             '''
+            
         elif(config == 'B'):
             self.matrixB[4][5] = 'W'
             self.matrixB[4][4] = 'B'
