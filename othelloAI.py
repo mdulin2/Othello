@@ -4,6 +4,7 @@ from abPrune import ABPrune
 from operator import itemgetter
 import random as rand
 import time
+import threading
 import copy
 
 class OthelloAI:
@@ -19,19 +20,23 @@ class OthelloAI:
         self.__data = {}            # [value,isMax,parent,alpha,beta,x,y,token, path]
         self.__matrixState = {}     # holds matrix state at node
         self.__maxDepth = 5         # depth of search space used (must be odd)
-        self.__midDepth =3         # middle prune mark
+        self.__midDepth =3          # middle prune mark
         self.__nodePtr = 0          # 0 is root, used for naming nodes
+        self.__timeOut = False      # if true, AI tries to return quickly
 
 
     # pulls the matrix from board and chooses a move to make.
     # returns chosen move as an integer X and a char Y.
     def makeMove(self, board):
         x,y = self.__deepMove(board.matrixB)
-        if(y == '@'):
-            print "@ return, correcting..."
+        isLegal = self.rules.isLegalMove(x, y, board.matrixB, self.__myToken)
+
+        if(y < 1 or y > 8 or not isLegal):
+            print "X,Y:",x,y,"return, correcting..."
             x,y = self.__simpleMove(board.matrixB)
 
         return x, self.__changeY(y)
+
 
     #prints all of the possible move for the turn
     def printMoves(self,matrix,turn):
@@ -76,7 +81,7 @@ class OthelloAI:
         if(self.__maxDepth > self.__midDepth):
             self.__pruneMiddle()
             self.__buildToMax(0, 1) # start node, start depth
-        
+
         #self.__printGraph()
         #self.__printData()
         x,y = self.__getBestMove()
@@ -101,13 +106,13 @@ class OthelloAI:
             self.__maxDepth = movesToGo
 
 
-    # recursively builds the graph to be searched. Limited to a depth
-    # specified in self.__maxDepth
+    # recursively builds the graph to be searched.
+    # Limited to a depth specified in self.__maxDepth
     # populates self.__graph with children data
     # populates self.__data
     def __deepMoveBuilder(self,stopDepth, parNode, curDepth, matrix, path):
         # if depth is reached, stop recursion
-        if(stopDepth+1 == curDepth):
+        if(stopDepth+1 == curDepth or self.__timeOut):
             return
 
         # set whose turn it is
