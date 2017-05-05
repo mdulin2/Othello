@@ -89,9 +89,12 @@ class PositionH:
             oppTotalScore = 1
         #print oppCount
         #this could be better, for sure. Might just move it into the GrabSides file
-        #countX = self.GrabSides.RunCheck(matrix)
-        #if(value > 0):
-            #totalScore +=3000
+        value,countX = self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken)
+        if(value > 0):
+            myTotalScore +=2000
+        value = self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken)
+        if(value > 0):
+            oppTotalScore+= 3000
 
 
         return myTotalScore,oppTotalScore,myCount,oppCount

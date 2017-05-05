@@ -19,24 +19,24 @@ class GrabSides:
     def __init__(self,myToken,oppToken):
         self.rules = Rules()
         self.__myToken = myToken
-        self.__oppToken = oppToken
+        self.__myToken = oppToken
 
     #The upper call for all of the functions. Gets the scoring scenarios
-    def RunCheck(self,matrix,player):
+    def RunCheck(self,matrix,player,opposingPlayer):
         score = 0
         count = 0
         if(matrix[1][3] != '-' or matrix[1][6] != '-'):
-            score = self.__moveUpTop(matrix,0,player)
+            score = self.__moveUpTop(matrix,0,player,opposingPlayer)
             if(score > 0):
                 count+=1
-            topLeftScore = self.__moveUpTop(matrix,1)
+            topLeftScore = self.__moveUpTop(matrix,1,player,opposingPlayer)
             if(topLeftScore > 0):
                 count+=1
-            score += self.__moveUpTop(matrix,1)
+            score += self.__moveUpTop(matrix,1,player,opposingPlayer)
 
         if(matrix[8][3] != '-' or matrix[8][6] != '-'):
-            score = self.__moveUpBottom(matrix,0)
-            score+= self.__moveUpBottom(matrix,1)
+            score = self.__moveUpBottom(matrix,0,player,opposingPlayer)
+            score+= self.__moveUpBottom(matrix,1,player,opposingPlayer)
         return score,count
 
 
@@ -46,17 +46,17 @@ class GrabSides:
 
 
     #The game needs to capitalize on a few scenarios. Needs to be hard coded!
-    def __moveUpTop(self,matrix,sectionType):
+    def __moveUpTop(self,matrix,sectionType,player,opposingPlayer):
         count = 0
         #left to right
-        if(matrix[1][1] == '-' and sectionType == 0 and self.rules.isLegalMove(1,7,matrix,self.__oppToken) == False):
-            if(matrix[1][3] == self.__myToken):
+        if(matrix[1][1] == '-' and sectionType == 0):
+            if(matrix[1][3] == player):
                 for i in range(3,8):
-                    if(matrix[1][i] == self.__myToken):
+                    if(matrix[1][i] == player):
                         count+=1
-                    elif(matrix[1][i] == self.__oppToken):
+                    elif(matrix[1][i] == opposingPlayer):
                         return 0
-                if(count >=3):
+                if(count >=2):
                     if(matrix[1][8] == '-'):
                         #guarenteed corner if this is true
                         return 1000
@@ -64,56 +64,56 @@ class GrabSides:
                         return 100
                 return 0
                     #fantastic move!
-            if(matrix[1][3] == self.__oppToken):
+            if(matrix[1][3] == opposingPlayer):
                 for i in range(4,8):
-                    if(matrix[1][i] == self.__myToken):
+                    if(matrix[1][i] == player):
                         count+=1
-                    elif(matrix[1][i] == self.__oppToken):
+                    elif(matrix[1][i] == opposingPlayer):
                         return 0
-                if(count >=3):
+                if(count >=1):
                     #guarenteed corner if this is true
                     return 1000
 
         #right to left
-        if(matrix[1][8] == '-'  and sectionType == 1 and self.rules.isLegalMove(1,2,matrix,self.__oppToken) == False):
-            if(matrix[1][6] == self.__myToken):
+        if(matrix[1][8] == '-'  and sectionType == 1):
+            if(matrix[1][6] == player):
                 for i in range(6,0,-1):
-                    if(matrix[1][i] == self.__myToken):
+                    if(matrix[1][i] == player):
                         count+=1
-                    elif(matrix[1][i] == self.__oppToken):
+                    elif(matrix[1][i] == opposingPlayer):
                         return 0
                 #this is legendary
-                if(count >=3):
+                if(count >=2):
                     if(matrix[8][1] == '-'):
                         #guarenteed corner if this is true
                         return 1000
                     else:
                         return 100
                     #fantastic move!
-            if(matrix[1][6] == self.__oppToken):
+            if(matrix[1][6] == opposingPlayer):
                 for i in range(5,0,-1):
-                    if(matrix[1][i] == self.__myToken):
+                    if(matrix[1][i] == player):
                         count+=1
-                    elif(matrix[1][i] == self.__oppToken):
+                    elif(matrix[1][i] == opposingPlayer):
                         return 0
-                if(count >= 3):
+                if(count >= 2):
                         #guarenteed corner if this is true
                     return 1000
                     #fantastic move!
         return 0
 
     #The game needs to capitalize on a few scenarios. Needs to be hard coded!
-    def __moveUpBottom(self,matrix,sectionType):
+    def __moveUpBottom(self,matrix,sectionType,player,opposingPlayer):
         count = 0
         #left to right
-        if(matrix[8][1] == '-' and sectionType == 0 and self.rules.isLegalMove(8,7,matrix,self.__oppToken) == False):
-            if(matrix[8][3] == self.__myToken):
+        if(matrix[8][1] == '-' and sectionType == 0):
+            if(matrix[8][3] == player):
                 for i in range(3,8):
-                    if(matrix[8][i] == self.__myToken):
+                    if(matrix[8][i] == player):
                         count+=1
-                    elif(matrix[8][i] == self.__oppToken):
+                    elif(matrix[8][i] == opposingPlayer):
                         return 0
-                if(count >=3):
+                if(count >=1):
                     if(matrix[8][8] == '-'):
                         #guarenteed corner if this is true
                         return 1000
@@ -122,23 +122,23 @@ class GrabSides:
                 return 0
                     #fantastic move!
 
-            elif(matrix[8][3] == self.__oppToken):
+            elif(matrix[8][3] == opposingPlayer):
                 for i in range(4,8):
-                    if(matrix[8][i] == self.__myToken):
+                    if(matrix[8][i] == player):
                         count+=1
-                    elif(matrix[8][i] == self.__oppToken):
+                    elif(matrix[8][i] == opposingPlayer):
                         return 0
-                if(count >=3):
+                if(count >=2):
                     #guarenteed corner if this is true
                     return 1000
 
         #right to left
-        if(matrix[8][8] == '-' and sectionType == 1 and self.rules.isLegalMove(8,2,matrix,self.__oppToken) == False):
-            if(matrix[8][6] == self.__myToken):
+        if(matrix[8][8] == '-' and sectionType == 1):
+            if(matrix[8][6] == player):
                 for i in range(6,0,-1):
                     if(matrix[8][i] == self.__myToken):
                         count+=1
-                    elif(matrix[8][i] == self.__oppToken):
+                    elif(matrix[8][i] == opposingPlayer):
                         return 0
                 #this is legendary
                 if(count >=3):
@@ -148,13 +148,14 @@ class GrabSides:
                     else:
                         return 100
                     #fantastic move!
-            elif(matrix[8][6] == self.__oppToken):
+            elif(matrix[8][6] == opposingPlayer):
                 for i in range(5,0,-1):
                     if(matrix[8][i] == self.__myToken):
                         count+=1
-                    elif(matrix[8][i] == self.__oppToken):
+                    elif(matrix[8][i] == opposingPlayer):
                         return 0
                 if(count >= 3):
+                    print "here"
                     #guarenteed corner if this is true
                     return 1000
                     #fantastic move!

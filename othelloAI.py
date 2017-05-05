@@ -72,11 +72,11 @@ class OthelloAI:
         stopDepth = self.__resetValues(matrix, moveCount)
         self.__deepMoveBuilder(stopDepth, self.__nodePtr, 1, copy.deepcopy(matrix),[])
         self.__reorderChildren(0)
-        
+
         if(self.__maxDepth > self.__midDepth):
             self.__pruneMiddle()
             self.__buildToMax(0, 1) # start node, start depth
-
+        
         #self.__printGraph()
         #self.__printData()
         x,y = self.__getBestMove()
