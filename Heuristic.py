@@ -32,7 +32,7 @@ class Heuristic:
         self.__myToken   = myToken
         self.__depth = 3
 
-        self.__positionScores   = [[95,10,65,60,60,65,10,95],
+        self.__positionScores   = [[95,10,80,75,75,80,10,95],
                                     [10,12,45,45,45,45,12,10],
                                     [65,40,70,50,50,70,40,65],
                                     [60,40,40,40,40,40,40,60],

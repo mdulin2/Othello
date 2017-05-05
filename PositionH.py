@@ -65,7 +65,7 @@ class PositionH:
                     elif(self.__isViable(path,i,j,matrix)):
                         myTotalScore += 200
                     elif(self.__isWedgeSquare(i,j,matrix,self.__myToken)):
-                        myTotalScore = myTotalScore -8000
+                        myTotalScore = myTotalScore -10000
                     elif(value < 11):
                         #need to really hate on this
                         myTotalScore = myTotalScore - 400
