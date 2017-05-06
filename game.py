@@ -1,9 +1,7 @@
 from Board import Board
 from Board import Turn
 from othelloAI import OthelloAI
-import threading
-import time
-import sys
+from OTimer import OTimer
 import copy
 from random import randint
 
@@ -16,10 +14,6 @@ class Game:
     # initialize board conditions to game specifications.
     def __init__(self):
         self.__turn = Turn('B')
-        self.__AIplayed = False
-        self.__isAIturn = False
-        self.__stopTimer = False
-        self.__AIturnTime = 10      # in seconds
         self.__player = ''
         self.__AItoken = ''
         self.board = self.__getInit()
@@ -30,11 +24,10 @@ class Game:
     # plays a standard game of Othello with an option to adjust the length
     # of a turn. Param: turnTime, seconds as an int.
     def playGame(self, turnTime):
-        self.__AIturnTime = turnTime
+        self.OTimer = OTimer(turnTime, 2, 1)
 
         # create thread for the AI timer
-        self.timeThread = threading.Thread(target=self.__timer, args=())
-        self.timeThread.start()
+        self.OTimer.startThread()
 
         while(not self.board.isGameOver()):
 
@@ -47,10 +40,8 @@ class Game:
 
             self.__confirmMove()
             self.__turn.flip()
-            #***The print is in move with the parameters being correct
-            #self.board.highLightPrint()
-        # join threads and finish the game
-        self.__endGame()
+
+        self.OTimer.joinThreads()
 
 
     ############################
@@ -116,7 +107,7 @@ class Game:
     def __confirmMove(self):
         choice = raw_input("Confirm Move.\n'q' to quit, 'r' to revert board: ")
         if(choice == 'q'):
-            self.__endGame()
+            self.OTimer.joinThreads()
         elif(choice == 'r'):
             print "Board set to prior state."
             self.board.revertBoard()
@@ -124,43 +115,20 @@ class Game:
             self.__turn.flip()
 
 
-    # counts down from 10, waiting for __AIplayed to be true.
-    # if __AIplayed never evaluates to true, prints to terminal (currently).
-    def __timer(self):
-        while(not self.__stopTimer):
-            if(self.__isAIturn):
-                self.__isAIturn = False
-                print "AI timer:"
-                for i in range(self.__AIturnTime, 0, -1):
-                    print i
-                    time.sleep(1)
-                    if(i == 1):
-                        print "AI did not play in time. "
-                    if(self.__AIplayed == True):
-                        break
-
-
     # bot for making AI moves
     def __runAI(self):
-        self.__AIplayed = False    # starts timer
-        self.__isAIturn = True
+        self.OTimer.AIplayed(False)
+        self.OTimer.isAIturn(True)
 
-        x,y = self.__AI.makeMove(copy.deepcopy(self.board))
+        x,y = self.__AI.makeMove(copy.deepcopy(self.board), self.OTimer)
         if(x != 999):
             print("AI move: " + str(x) + " " + y)
         else:
             print("no moves available to AI")
 
-        self.__AIplayed = True      # stops timer
+        self.OTimer.AIplayed(True)  # stops timer
         self.board.move(x,y)
-        self.__isAIturn = False
-
-
-    # finish game and join all threads
-    def __endGame(self):
-        self.__stopTimer = True
-        self.timeThread.join()
-        sys.exit()
+        self.OTimer.isAIturn(False)
 
 
 # runs the base game of Othello

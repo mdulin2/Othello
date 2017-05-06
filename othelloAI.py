@@ -22,12 +22,13 @@ class OthelloAI:
         self.__maxDepth = 5         # depth of search space used (must be odd)
         self.__midDepth =3          # middle prune mark
         self.__nodePtr = 0          # 0 is root, used for naming nodes
-        self.__timeOut = False      # if true, AI tries to return quickly
 
 
     # pulls the matrix from board and chooses a move to make.
     # returns chosen move as an integer X and a char Y.
-    def makeMove(self, board):
+    def makeMove(self, board, OTimer):
+        self.OTimer = OTimer
+
         x,y = self.__deepMove(board.matrixB)
         isLegal = self.rules.isLegalMove(x, y, board.matrixB, self.__myToken)
 
@@ -48,7 +49,13 @@ class OthelloAI:
                         print i,j
 
 
+    #---------------------------
+    #          PRIVATE
+    #---------------------------
+
+
     # initialize all search space variables for new build and search
+    # returns the stopping depth for the midpoint.
     def __resetValues(self,matrix, moveCount):
         self.abPrune = ABPrune()
         self.__graph = {}           # holds children in a list
@@ -56,14 +63,8 @@ class OthelloAI:
         self.__nodePtr = 0          # 0 is root, used for naming nodes
         self.__graph[0] = []
         self.__data[0] = [-999999,True,"none",-999999,999999,0,0,self.__myToken, []]
-        self.__setDepth(matrix, moveCount)
-        if self.__maxDepth < self.__midDepth:
-            stopDepth = self.__maxDepth
-        else:
-            stopDepth = self.__midDepth
-        self.heuristic.setDepth(stopDepth)
+        return self.__setDepth(matrix, moveCount)
 
-        return stopDepth
 
 
     # performs a move using minimax and alpha beta pruning
@@ -87,14 +88,11 @@ class OthelloAI:
         return x,y
 
 
-    # Set max tree depth, based on the amount of moves on the board.
+    # Set max tree depth, sets midpoint of depth search.
     # moveCount: number of moves available to the AI
+    # returns the stopDepth
     def __setDepth(self,matrix, moveCount):
-        movesToGo = 0
-        for i in range(1,9):
-            for j in range(1,9):
-                if matrix[i][j] == '-':
-                    movesToGo += 1
+        movesToGo = self.__getMovesToGo(matrix)
 
         if(moveCount >= 9 or movesToGo < 5):
             self.__maxDepth = 3
@@ -104,6 +102,13 @@ class OthelloAI:
         if movesToGo < self.__maxDepth:
             self.__maxDepth = movesToGo
 
+        if self.__maxDepth < self.__midDepth:
+            stopDepth = self.__maxDepth
+        else:
+            stopDepth = self.__midDepth
+        self.heuristic.setDepth(stopDepth)
+        return stopDepth
+
 
     # recursively builds the graph to be searched.
     # Limited to a depth specified in self.__maxDepth
@@ -111,7 +116,7 @@ class OthelloAI:
     # populates self.__data
     def __deepMoveBuilder(self,stopDepth, parNode, curDepth, matrix, path):
         # if depth is reached, stop recursion
-        if(stopDepth+1 == curDepth or self.__timeOut):
+        if((stopDepth+1 == curDepth) or self.OTimer.isRushTime()):
             return
 
         # set whose turn it is
@@ -231,18 +236,7 @@ class OthelloAI:
                     value = self.heuristic.calculateValue(nextMatrix,[i,j])
                     moveLst.append((i,j,value))
 
-        if(len(moveLst) > 0):
-            x = moveLst[0][0]
-            y = moveLst[0][1]
-            val = moveLst[0][2]
-            for move in moveLst:
-                if move[2] > val:
-                    x = move[0]
-                    y = move[1]
-                    val = move[2]
-            return x,y
-        else:
-            return 999,'oh boy'
+        return self.__bestQuickMove(moveLst)
 
 
     # loops through the matrix and picks the first move that is available.
@@ -256,6 +250,37 @@ class OthelloAI:
                     return i,j
 
         return 999,5 # no moves available
+
+
+    #---------------------------
+    #          HELPERS
+    #---------------------------
+
+
+    # returns the move with the highest value.
+    # moveLst: [(x,y,val),(x,y,val)...]
+    # returns x,y coordinate pair of chosen move.
+    def __bestQuickMove(self, moveLst):
+        if(len(moveLst) > 0):
+            x,y = moveLst[0][0], moveLst[0][1]
+            val = moveLst[0][2]
+            for move in moveLst:
+                if move[2] > val:
+                    x = move[0]
+                    y = move[1]
+                    val = move[2]
+            return x,y
+        return 999,3 # no moves available
+
+
+    # number of moves yet to be made on a given game board
+    def __getMovesToGo(self, matrix):
+        movesToGo = 0
+        for i in range(1,9):
+            for j in range(1,9):
+                if matrix[i][j] == '-':
+                    movesToGo += 1
+        return movesToGo
 
 
     # convert Y into its proper board form (character)
