@@ -33,12 +33,12 @@ class Heuristic:
         self.__depth = 3
 
         self.__positionScores   = [[95,10,80,75,75,80,10,95],
-                                    [10,12,45,45,45,45,12,10],
+                                    [10,10,45,45,45,45,10,10],
                                     [65,40,70,50,50,70,40,65],
                                     [60,40,40,40,40,40,40,60],
                                     [60,40,40,40,40,40,40,60],
                                     [65,40,70,50,50,70,40,65],
-                                    [10,12,45,45,45,45,12,10],
+                                    [10,10,45,45,45,45,10,10],
                                     [95,10,65,60,60,65,10,95]]
         self.PositionH = PositionH(myToken,oppToken,self.__positionScores)
         self.MobilityH = MobilityH(myToken,oppToken)
@@ -124,7 +124,7 @@ class Heuristic:
         stabVal = stabVal * .30
         mobilityVal = mobilityVal *.20
         posVal = posVal * .1
-        chipCount = chipCount * .5
+        chipCount = chipCount * .9
         score = chipCount * mobilityVal * posVal
         return score
 
@@ -139,7 +139,7 @@ class Heuristic:
     # returns the ratio of chips on the board that are myToken.
     def __getChipRatio(self, movesPlayed, matrix):
         myCount = 0
-        oppCount = 0
+        oppCount = 3
         for i in range(0,9):
             for j in range(1,9):
                 if(matrix[i][j] == self.__myToken):

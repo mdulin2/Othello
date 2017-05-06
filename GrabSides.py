@@ -22,22 +22,13 @@ class GrabSides:
         self.__myToken = oppToken
 
     #The upper call for all of the functions. Gets the scoring scenarios
-    def RunCheck(self,matrix,player,opposingPlayer):
+    def RunCheck(self,matrix,player,opposingPlayer,i,j):
         score = 0
-        count = 0
-        if(matrix[1][3] != '-' or matrix[1][6] != '-'):
-            score = self.__moveUpTop(matrix,0,player,opposingPlayer)
-            if(score > 0):
-                count+=1
-            topLeftScore = self.__moveUpTop(matrix,1,player,opposingPlayer)
-            if(topLeftScore > 0):
-                count+=1
-            score += self.__moveUpTop(matrix,1,player,opposingPlayer)
-
-        if(matrix[8][3] != '-' or matrix[8][6] != '-'):
-            score = self.__moveUpBottom(matrix,0,player,opposingPlayer)
-            score+= self.__moveUpBottom(matrix,1,player,opposingPlayer)
-        return score,count
+        score += self.__moveUpTop(matrix,player,opposingPlayer,i,j)
+        score += self.__moveUpBottom(matrix,player,opposingPlayer,i,j)
+        score += self.__moveUpLeft(matrix,player,opposingPlayer,i,j)
+        score += self.__moveUpRight(matrix,player,opposingPlayer,i,j)
+        return score
 
 
     ##################
@@ -46,7 +37,7 @@ class GrabSides:
 
 
     #The game needs to capitalize on a few scenarios. Needs to be hard coded!
-    def __moveUpTop(self,matrix,sectionType,player,opposingPlayer):
+    def __moveUpTop(self,matrix,player,opposingPlayer,i,j):
         count = 0
         blank = 0
         #left to right
@@ -61,15 +52,15 @@ class GrabSides:
                 else:
                     print "error?"
                 #if the space is empty besides my pieces
-                if(blank == 6):
-                    return 1000
-                #Some combination of my user pieces
-                else:
-                    return 10000
+            if(blank == 6): # and (i !=1 and j !=2) and i != 1 and j != 7):
+                return 1000
+            #Some combination of my user pieces
+            else:
+                return 5000
         return 0
 
     #The game needs to capitalize on a few scenarios. Needs to be hard coded!
-    def __moveUpBottom(self,matrix,sectionType,player,opposingPlayer):
+    def __moveUpBottom(self,matrix,player,opposingPlayer,i,j):
         count = 0
         blank = 0
         if(matrix[8][1] != opposingPlayer and matrix[8][8] != opposingPlayer):
@@ -83,18 +74,16 @@ class GrabSides:
                 else:
                     print "error?"
 
-                #if the space is empty besides my pieces
-                if(blank == 6):
-                    return 1000
-                #Some combination of my user pieces
-                else:
-                    return 10000
-
-
+            #if the space is empty besides my pieces
+            if(blank == 6):
+                return 1000
+            #Some combination of my user pieces
+            else:
+                return 5000
         return 0
 
     #checks the left side of the board for the sides
-    def __moveUpLeft(self,matrix,sectionType,player,opposingPlayer):
+    def __moveUpLeft(self,matrix,player,opposingPlayer,i,j):
         count = 0
         blank = 0
         if(matrix[1][1] != opposingPlayer and matrix[8][1] != opposingPlayer):
@@ -108,16 +97,16 @@ class GrabSides:
                 else:
                     print "error?"
 
-                #if the space is empty besides my pieces
-                if(blank == 6):
-                    return 1000
-                #Some combination of my user pieces
-                else:
-                    return 10000
+            #if the space is empty besides my pieces
+            if(blank == 6):
+                return 1000
+            #Some combination of my user pieces
+            else:
+                return 5000
         return 0
 
     #checks the right side of the board for the sides
-    def __moveUpRight(self,matrix,sectionType,player,opposingPlayer):
+    def __moveUpRight(self,matrix,player,opposingPlayer,i,j):
         count = 0
         blank = 0
         if(matrix[1][8] != opposingPlayer and matrix[8][8] != opposingPlayer):
@@ -131,10 +120,10 @@ class GrabSides:
                 else:
                     print "error?"
 
-                #if the space is empty besides my pieces
-                if(blank == 6):
-                    return 1000
-                #Some combination of my user pieces
-                else:
-                    return 10000
+            #if the space is empty besides my pieces
+            if(blank == 6):
+                return 1000
+            #Some combination of my user pieces
+            else:
+                return 5000
         return 0

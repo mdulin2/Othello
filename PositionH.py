@@ -24,7 +24,7 @@ class PositionH:
     def getScore(self,matrix,path):
         myTotalScore,oppTotalScore,myChips,oppChips = self.__getPositionFactor(matrix,path)
         #altScore = self.alterations(matrix)
-        myTotalScore =  myTotalScore / float(myChips * 44.675 * 4)
+        myTotalScore =  myTotalScore / float(myChips * 44.675 * 3)
         oppTotalScore = oppTotalScore / float(oppChips * 44.675)
         if(oppTotalScore == 0):
             finalScore = (myTotalScore / 1)
@@ -64,15 +64,16 @@ class PositionH:
                     value = self.__positionScores[i-1][j-1]
                     myCount+=1
                     if (value > 90):
-                        myTotalScore += 8000
+                        myTotalScore += 50000
+                        oppTotalScore = oppTotalScore - 400
                     #might need to alter this in order to check if the rest is okay
                     elif(self.__isViable(path,i,j,matrix)):
                         myTotalScore += 200
                     elif(self.__isWedgeSquare(i,j,matrix,self.__myToken)):
-                        myTotalScore = myTotalScore -1000
+                        myTotalScore = myTotalScore -6000
                     elif(value < 11):
                         #need to really hate on this
-                        myTotalScore = myTotalScore - 400
+                        myTotalScore = myTotalScore - 1000
                     else:
                         myTotalScore+=value
 
@@ -81,22 +82,24 @@ class PositionH:
                     oppCount +=1
                     if (value > 90):
                         oppTotalScore += 100000
+                        myTotalScore =myTotalScore - 1500
                     elif(self.__isViable(path,i,j,matrix)):
                         oppTotalScore += 300
-                    elif(value <= 11):
-                        #don't want them on the X squares for position reasons
-                        oppTotalScore += 500
-                    elif(self.__isWedgeSquare(i,j,matrix,self.__myToken)):
-                        oppTotalScore = oppTotalScore - 200
+                    elif(self.__isWedgeSquare(i,j,matrix,self.__oppToken)):
+                        oppTotalScore = oppTotalScore - 400
                     #elif not sure if I want to check for the Xsquares or not
                     else:
                         oppTotalScore+=value
+
         if(oppTotalScore <= 0):
             oppTotalScore = 1/100
         #print oppCount
         #this could be better, for sure. Might just move it into the GrabSides file
-        value,countX = self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken)
+        value= self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken,i,j)
         myTotalScore +=value
+        value = 1.5 * (self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken,i,j))
+        oppTotalScore +=value
+
         #value = self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken)
         #if(value > 0):
             #oppTotalScore+= 3000
