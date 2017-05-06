@@ -26,7 +26,11 @@ class PositionH:
         #altScore = self.alterations(matrix)
         myTotalScore =  myTotalScore / float(myChips * 44.675 * 4)
         oppTotalScore = oppTotalScore / float(oppChips * 44.675)
-        finalScore = (myTotalScore / float(oppTotalScore))
+        if(oppTotalScore == 0):
+            finalScore = (myTotalScore / 1)
+        else:
+            finalScore = (myTotalScore / float(oppTotalScore))
+
         finalScore / (float(15))
         return finalScore
 
@@ -51,7 +55,7 @@ class PositionH:
     def __getPositionFactor(self, matrix,path):
         myTotalScore = 0
         oppTotalScore = 0
-        myCount = 0
+        myCount = 1
         oppCount = 1
         turnCount = self.__getMovedPlayed(matrix)
         for i in range(1,9):
@@ -65,7 +69,7 @@ class PositionH:
                     elif(self.__isViable(path,i,j,matrix)):
                         myTotalScore += 200
                     elif(self.__isWedgeSquare(i,j,matrix,self.__myToken)):
-                        myTotalScore = myTotalScore -10000
+                        myTotalScore = myTotalScore -1000
                     elif(value < 11):
                         #need to really hate on this
                         myTotalScore = myTotalScore - 400
@@ -88,12 +92,11 @@ class PositionH:
                     else:
                         oppTotalScore+=value
         if(oppTotalScore <= 0):
-            oppTotalScore = 1
+            oppTotalScore = 1/100
         #print oppCount
         #this could be better, for sure. Might just move it into the GrabSides file
-        #value,countX = self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken)
-        #if(value > 0):
-            #myTotalScore +=2000
+        value,countX = self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken)
+        myTotalScore +=value
         #value = self.GrabSides.RunCheck(matrix,self.__myToken,self.__oppToken)
         #if(value > 0):
             #oppTotalScore+= 3000

@@ -226,7 +226,7 @@ class Board:
         '''
         if(config == 'W'):
 
-            for i in range(7):
+            for i in range(6):
                 for j in range(8):
                     tmp = rand.randint(0,2)
                     if(tmp == 2):
@@ -253,15 +253,6 @@ class Board:
             self.matrixB[5][4] = 'B'
             self.matrixB[5][5] = 'W'
 
-
-            '''
-            self.matrixB[8][6] = 'W'
-            self.matrixB[8][5] = 'B'
-            self.matrixB[8][4] = 'B'
-            self.matrixB[8][3] = 'B'
-            self.matrixB[7][2] = 'B'
-            '''
-            
         elif(config == 'B'):
             self.matrixB[4][5] = 'W'
             self.matrixB[4][4] = 'B'

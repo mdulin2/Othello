@@ -48,118 +48,93 @@ class GrabSides:
     #The game needs to capitalize on a few scenarios. Needs to be hard coded!
     def __moveUpTop(self,matrix,sectionType,player,opposingPlayer):
         count = 0
+        blank = 0
         #left to right
-        if(matrix[1][1] == '-' and sectionType == 0):
-            if(matrix[1][3] == player):
-                for i in range(3,8):
-                    if(matrix[1][i] == player):
-                        count+=1
-                    elif(matrix[1][i] == opposingPlayer):
-                        return 0
-                if(count >=2):
-                    if(matrix[1][8] == '-'):
-                        #guarenteed corner if this is true
-                        return 1000
-                    else:
-                        return 100
-                return 0
-                    #fantastic move!
-            if(matrix[1][3] == opposingPlayer):
-                for i in range(4,8):
-                    if(matrix[1][i] == player):
-                        count+=1
-                    elif(matrix[1][i] == opposingPlayer):
-                        return 0
-                if(count >=1):
-                    #guarenteed corner if this is true
+        if(matrix[1][1] != opposingPlayer and matrix[1][8] != opposingPlayer):
+            for i in range(2,8):
+                if(matrix[1][i] == opposingPlayer):
+                    return 0
+                elif(matrix[1][i] == '-'):
+                    blank+=1
+                elif(matrix[1][i] == player):
+                    count+=1
+                else:
+                    print "error?"
+                #if the space is empty besides my pieces
+                if(blank == 6):
                     return 1000
-
-        #right to left
-        if(matrix[1][8] == '-'  and sectionType == 1):
-            if(matrix[1][6] == player):
-                for i in range(6,0,-1):
-                    if(matrix[1][i] == player):
-                        count+=1
-                    elif(matrix[1][i] == opposingPlayer):
-                        return 0
-                #this is legendary
-                if(count >=2):
-                    if(matrix[8][1] == '-'):
-                        #guarenteed corner if this is true
-                        return 1000
-                    else:
-                        return 100
-                    #fantastic move!
-            if(matrix[1][6] == opposingPlayer):
-                for i in range(5,0,-1):
-                    if(matrix[1][i] == player):
-                        count+=1
-                    elif(matrix[1][i] == opposingPlayer):
-                        return 0
-                if(count >= 2):
-                        #guarenteed corner if this is true
-                    return 1000
-                    #fantastic move!
+                #Some combination of my user pieces
+                else:
+                    return 10000
         return 0
 
     #The game needs to capitalize on a few scenarios. Needs to be hard coded!
     def __moveUpBottom(self,matrix,sectionType,player,opposingPlayer):
         count = 0
-        #left to right
-        if(matrix[8][1] == '-' and sectionType == 0):
-            if(matrix[8][3] == player):
-                for i in range(3,8):
-                    if(matrix[8][i] == player):
-                        count+=1
-                    elif(matrix[8][i] == opposingPlayer):
-                        return 0
-                if(count >=1):
-                    if(matrix[8][8] == '-'):
-                        #guarenteed corner if this is true
-                        return 1000
-                    else:
-                        return 100
-                return 0
-                    #fantastic move!
+        blank = 0
+        if(matrix[8][1] != opposingPlayer and matrix[8][8] != opposingPlayer):
+            for i in range(2,8):
+                if(matrix[8][i] == opposingPlayer):
+                    return 0
+                elif(matrix[8][i] == '-'):
+                    blank+=1
+                elif(matrix[8][i] == player):
+                    count+=1
+                else:
+                    print "error?"
 
-            elif(matrix[8][3] == opposingPlayer):
-                for i in range(4,8):
-                    if(matrix[8][i] == player):
-                        count+=1
-                    elif(matrix[8][i] == opposingPlayer):
-                        return 0
-                if(count >=2):
-                    #guarenteed corner if this is true
+                #if the space is empty besides my pieces
+                if(blank == 6):
                     return 1000
+                #Some combination of my user pieces
+                else:
+                    return 10000
 
-        #right to left
-        if(matrix[8][8] == '-' and sectionType == 1):
-            if(matrix[8][6] == player):
-                for i in range(6,0,-1):
-                    if(matrix[8][i] == self.__myToken):
-                        count+=1
-                    elif(matrix[8][i] == opposingPlayer):
-                        return 0
-                #this is legendary
-                if(count >=3):
-                    if(matrix[8][8] == '-'):
-                        #guarenteed corner if this is true
-                        return 1000
-                    else:
-                        return 100
-                    #fantastic move!
-            elif(matrix[8][6] == opposingPlayer):
-                for i in range(5,0,-1):
-                    if(matrix[8][i] == self.__myToken):
-                        count+=1
-                    elif(matrix[8][i] == opposingPlayer):
-                        return 0
-                if(count >= 3):
-                    print "here"
-                    #guarenteed corner if this is true
-                    return 1000
-                    #fantastic move!
+
         return 0
 
-    def __moveUpRight(self,matrix,sectionType):
-        pass
+    #checks the left side of the board for the sides
+    def __moveUpLeft(self,matrix,sectionType,player,opposingPlayer):
+        count = 0
+        blank = 0
+        if(matrix[1][1] != opposingPlayer and matrix[8][1] != opposingPlayer):
+            for i in range(2,8):
+                if(matrix[i][1] == opposingPlayer):
+                    return 0
+                elif(matrix[i][1] == '-'):
+                    blank+=1
+                elif(matrix[i][1] == player):
+                    count+=1
+                else:
+                    print "error?"
+
+                #if the space is empty besides my pieces
+                if(blank == 6):
+                    return 1000
+                #Some combination of my user pieces
+                else:
+                    return 10000
+        return 0
+
+    #checks the right side of the board for the sides
+    def __moveUpRight(self,matrix,sectionType,player,opposingPlayer):
+        count = 0
+        blank = 0
+        if(matrix[1][8] != opposingPlayer and matrix[8][8] != opposingPlayer):
+            for i in range(2,8):
+                if(matrix[i][8] == opposingPlayer):
+                    return 0
+                elif(matrix[i][8] == '-'):
+                    blank+=1
+                elif(matrix[i][8] == player):
+                    count+=1
+                else:
+                    print "error?"
+
+                #if the space is empty besides my pieces
+                if(blank == 6):
+                    return 1000
+                #Some combination of my user pieces
+                else:
+                    return 10000
+        return 0
