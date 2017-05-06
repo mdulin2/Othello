@@ -24,7 +24,7 @@ class Game:
     # plays a standard game of Othello with an option to adjust the length
     # of a turn. Param: turnTime, seconds as an int.
     def playGame(self, turnTime):
-        self.OTimer = OTimer(turnTime, turnTime - 3, turnTime - 1)
+        self.OTimer = OTimer(turnTime, 2, 1)
 
         # create thread for the AI timer
         self.OTimer.startThread()
@@ -120,7 +120,7 @@ class Game:
         self.OTimer.AIplayed(False)
         self.OTimer.isAIturn(True)
 
-        x,y = self.__AI.makeMove(copy.deepcopy(self.board))
+        x,y = self.__AI.makeMove(copy.deepcopy(self.board), self.OTimer)
         if(x != 999):
             print("AI move: " + str(x) + " " + y)
         else:

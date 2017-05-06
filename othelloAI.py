@@ -22,12 +22,13 @@ class OthelloAI:
         self.__maxDepth = 5         # depth of search space used (must be odd)
         self.__midDepth =3          # middle prune mark
         self.__nodePtr = 0          # 0 is root, used for naming nodes
-        self.__timeOut = False      # if true, AI tries to return quickly
 
 
     # pulls the matrix from board and chooses a move to make.
     # returns chosen move as an integer X and a char Y.
-    def makeMove(self, board):
+    def makeMove(self, board, OTimer):
+        self.OTimer = OTimer
+
         x,y = self.__deepMove(board.matrixB)
         isLegal = self.rules.isLegalMove(x, y, board.matrixB, self.__myToken)
 
@@ -115,7 +116,7 @@ class OthelloAI:
     # populates self.__data
     def __deepMoveBuilder(self,stopDepth, parNode, curDepth, matrix, path):
         # if depth is reached, stop recursion
-        if((stopDepth+1 == curDepth) or self.__timeOut):
+        if((stopDepth+1 == curDepth) or self.OTimer.isRushTime()):
             return
 
         # set whose turn it is
