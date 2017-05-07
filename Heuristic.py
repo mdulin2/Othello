@@ -5,6 +5,7 @@ from GrabSides import GrabSides
 from PositionH import PositionH
 from MobilityH import MobilityH
 from StabilityH import StabilityH
+from InteriorStability import InteriorStability
 '''
 Filename:   Heuristic.py
 Authors:    Max Dulin,Jacob Krantz
@@ -43,6 +44,7 @@ class Heuristic:
         self.PositionH = PositionH(myToken,oppToken,self.__positionScores)
         self.MobilityH = MobilityH(myToken,oppToken)
         self.StabilityH = StabilityH(myToken,oppToken)
+        self.InteriorStability = InteriorStability(myToken,oppToken)
 
 
 
@@ -66,25 +68,28 @@ class Heuristic:
             stabVal = 1 # don't think i need this here
             posVal = 1
             mobilityVal = 1
+            edge = 1
+            #edge = self.InteriorStability.getScore(matrix)
             posVal = self.PositionH.getScore(copy.deepcopy(matrix),path)
             mobilityVal = self.MobilityH.getScore(copy.deepcopy(matrix))
 
-            score = self.__getWeightStage1(stabVal,mobilityVal,posVal)
-            #score = self.__getChipRatio(movesPlayed, copy.deepcopy(matrix))
-            #score = self.__evaporation(movesPlayed,matrix)
-        elif(movesPlayed >= 17 and movesPlayed <58):
-
+            score = self.__getWeightStage1(stabVal,mobilityVal,posVal,edge)
+        elif(movesPlayed >= 17 and movesPlayed <=58):
+            #edge = self.InteriorStability.getScore(matrix)
+            edge = 1
             stabVal = self.StabilityH.getScore(copy.deepcopy(matrix))
             mobilityVal = self.MobilityH.getScore(copy.deepcopy(matrix))
             posVal = self.PositionH.getScore(copy.deepcopy(matrix),path)
-            score = self.__getWeightStage2(stabVal,mobilityVal,posVal)
+            score = self.__getWeightStage2(stabVal,mobilityVal,posVal,edge)
 
         else:
+            #edge = self.InteriorStability.getScore(matrix)
+            edge = 1
             chipCount = self.__getChipRatio(movesPlayed, copy.deepcopy(matrix))
             stabVal = self.StabilityH.getScore(copy.deepcopy(matrix))
             mobilityVal = self.MobilityH.getScore(copy.deepcopy(matrix))
             posVal = self.PositionH.getScore(copy.deepcopy(matrix),path)
-            score = self.__getWeightStage3(stabVal,mobilityVal,posVal,chipCount)
+            score = self.__getWeightStage3(stabVal,mobilityVal,posVal,chipCount,edge)
         #print '%.25f' % score
         return score
 
@@ -103,28 +108,31 @@ class Heuristic:
         return movesPlayed
 
     #Would give the weights for each of the values put in for stage 1
-    def __getWeightStage1(self,stabVal,mobilityVal,posVal):
+    def __getWeightStage1(self,stabVal,mobilityVal,posVal,edge):
         #print posVal
         stabVal = stabVal * .20
         mobilityVal = mobilityVal *.40
         posVal = posVal * .40
+        #edge = edge * .01
         score = stabVal * mobilityVal * posVal
         return score
 
     #Would give the weights for each of the values for stage 2
-    def __getWeightStage2(self,stabVal,mobilityVal,posVal):
+    def __getWeightStage2(self,stabVal,mobilityVal,posVal,edge):
         stabVal = stabVal * .30
         mobilityVal = mobilityVal *.70
         posVal = posVal * .50
+        #edge = edge * .01
         score = stabVal * mobilityVal * posVal
         return score
 
     #Gives the weights of the last stage of the game
-    def __getWeightStage3(self,stabVal,mobilityVal,posVal,chipCount):
+    def __getWeightStage3(self,stabVal,mobilityVal,posVal,chipCount,edge):
         stabVal = stabVal * .30
         mobilityVal = mobilityVal *.20
         posVal = posVal * .1
         chipCount = chipCount * .9
+        #edge = edge * .01
         score = chipCount * mobilityVal * posVal
         return score
 

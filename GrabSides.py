@@ -25,7 +25,6 @@ class GrabSides:
     def RunCheck(self,matrix,player,opposingPlayer,path,depth):
         score = 0
         if(len(path) == depth):
-
             score += self.__moveUpTop(matrix,player,opposingPlayer,path)
             score += self.__moveUpBottom(matrix,player,opposingPlayer,path)
             score += self.__moveUpLeft(matrix,player,opposingPlayer,path)
@@ -44,7 +43,7 @@ class GrabSides:
         blank = 0
         #left to right
         if(matrix[1][1] != opposingPlayer and matrix[1][8] != opposingPlayer):
-            for i in range(2,8):
+            for i in range(2,7):
                 if(matrix[1][i] == opposingPlayer):
                     return 0
                 elif(matrix[1][i] == '-'):
@@ -54,10 +53,10 @@ class GrabSides:
                 else:
                     print "error?"
                 #if the space is empty besides my pieces
-            if([1,2] in path or [1,7] in path == False and blank == 6):
+            if([1,2] in path or [1,7] in path == False and blank >= 3):
                 return -2000
             elif(blank == 6 or count <=1 ): # and (i !=1 and j !=2) and i != 1 and j != 7):
-                return 6000
+                return 4000
             #Some combination of my user pieces
             else:
                 return 5000
@@ -68,7 +67,7 @@ class GrabSides:
         count = 0
         blank = 0
         if(matrix[8][1] != opposingPlayer and matrix[8][8] != opposingPlayer):
-            for i in range(2,8):
+            for i in range(2,7):
                 if(matrix[8][i] == opposingPlayer):
                     return 0
                 elif(matrix[8][i] == '-'):
@@ -78,11 +77,11 @@ class GrabSides:
                 else:
                     print "error?"
 
-            if([8,2] in path or [8,7] in path and blank == 6):
+            if([8,2] in path or [8,7] in path and blank >= 3):
                 return -2000
             #if the space is empty besides my pieces
             elif(blank == 6 or count <=1 ):
-                return 6000
+                return 4000
             #Some combination of my user pieces
             else:
                 return 5000
@@ -93,7 +92,7 @@ class GrabSides:
         count = 0
         blank = 0
         if(matrix[1][1] != opposingPlayer and matrix[8][1] != opposingPlayer):
-            for i in range(2,8):
+            for i in range(2,7):
                 if(matrix[i][1] == opposingPlayer):
                     return 0
                 elif(matrix[i][1] == '-'):
@@ -102,11 +101,11 @@ class GrabSides:
                     count+=1
                 else:
                     print "error?"
-            if([2,1] in path or [7,1] in path and blank == 6):
+            if([2,1] in path or [7,1] in path and blank >= 3):
                 return -2000
             #if the space is empty besides my pieces
             elif(blank == 6 or count <=1):
-                return 6000
+                return 4000
             #Some combination of my user pieces
             else:
                 return 5000
@@ -117,7 +116,7 @@ class GrabSides:
         count = 0
         blank = 0
         if(matrix[1][8] != opposingPlayer and matrix[8][8] != opposingPlayer):
-            for i in range(2,8):
+            for i in range(2,7):
                 if(matrix[i][8] == opposingPlayer):
                     return 0
                 elif(matrix[i][8] == '-'):
@@ -128,10 +127,10 @@ class GrabSides:
                     print "error?"
 
             #if the space is empty besides my pieces
-            if( [2,8] in path or [7,8] in path and blank == 6):
+            if( [2,8] in path or [7,8] in path and blank >= 3):
                 return -2000
             elif(blank == 6 or count <=1):
-                return 6000
+                return 4000
             #Some combination of my user pieces
             else:
                 return 5000

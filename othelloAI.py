@@ -98,6 +98,7 @@ class OthelloAI:
         self.__deepMoveBuilder(stopDepth, self.__nodePtr, 1, copy.deepcopy(matrix),[])
         self.__reorderChildren(0)
 
+        
         if(self.__maxDepth > self.__midDepth):
             self.__pruneMiddle()
             self.__buildToMax(0, 1) # start node, start depth
