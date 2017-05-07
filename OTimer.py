@@ -2,6 +2,17 @@ import threading
 import time
 import sys
 
+'''
+File:           OTimer.py
+Authors:        Max Dulin, Jacob Krantz
+Date:           5/7/2017
+Description:    Control class for timer to be run in separate thread for
+                the purpose of restraining an Othello AI to play a move
+                in a given amount of time. Controlling and reading from this
+                timer can be done by passing the timer object to other classes
+                as necessary.
+
+'''
 
 class OTimer:
 

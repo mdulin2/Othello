@@ -7,6 +7,21 @@ import time
 import threading
 import copy
 
+'''
+File:           othelloAI.py
+Authors:        Max Dulin, Jacob Krantz
+Date:           5/7/2017
+Description:    - builds a three layer search tree
+                - reorders first layer for best first search
+                - prunes bad paths from search tree using alpha beta pruning
+                - builds out search tree to five layers
+                - prunes entire tree and returns the best move possible
+Further:        - timer limits the building phase of the search space to
+                    8 seconds. Upon reaching 8 seconds, AI plays best
+                    immediate move it can find (1 layer search)
+                - heuristics privided by Heuristic.py
+'''
+
 class OthelloAI:
 
     # initialize the AI to its proper token
@@ -28,12 +43,17 @@ class OthelloAI:
     # returns chosen move as an integer X and a char Y.
     def makeMove(self, board, OTimer):
         self.OTimer = OTimer
+        isLegal = True
 
         x,y = self.__deepMove(board.matrixB)
-        isLegal = self.rules.isLegalMove(x, y, board.matrixB, self.__myToken)
-
-        if(y < 1 or y > 8 or not isLegal):
+        if(y > 0 and y < 9):
+            isLegal = self.rules.isLegalMove(x, y, board.matrixB, self.__myToken)
+        else:
             print "X,Y:",x,y,". Playing quick move."
+            x,y = self.__quickMove(board.matrixB)
+
+        if(not isLegal):
+            print "Illegal X,Y:",x,y,". Playing quick move."
             x,y = self.__quickMove(board.matrixB)
 
         return x, self.__changeY(y)
@@ -41,7 +61,7 @@ class OthelloAI:
 
     #prints all of the possible move for the turn
     def printMoves(self,matrix,turn):
-        print ("ALl of the moves: ")
+        print ("Possible AI moves: ")
         for i in range(1,9):
             for j in range(1,9):
                 if(matrix[i][j] == '-'):
