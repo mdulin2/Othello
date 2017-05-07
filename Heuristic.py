@@ -115,7 +115,7 @@ class Heuristic:
     def __getWeightStage2(self,stabVal,mobilityVal,posVal):
         stabVal = stabVal * .30
         mobilityVal = mobilityVal *.70
-        posVal = posVal * .30
+        posVal = posVal * .50
         score = stabVal * mobilityVal * posVal
         return score
 
