@@ -120,7 +120,7 @@ class Heuristic:
     #Would give the weights for each of the values for stage 2
     def __getWeightStage2(self,stabVal,mobilityVal,posVal,edge):
         stabVal = stabVal * .30
-        mobilityVal = mobilityVal *.70
+        mobilityVal = mobilityVal *.75
         posVal = posVal * .50
         #edge = edge * .01
         score = stabVal * mobilityVal * posVal
